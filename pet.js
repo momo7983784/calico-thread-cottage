@@ -214,9 +214,26 @@ for(let x=214;x<441;x+=6){box(x,269,1,2,cream);box(x,341,1,3,cream)}
 box(36,265,152,6,'#57403133');box(394,311,44,5,'#57403133');
 }
 function furniturePalette(slot){return furnitureThemes[byGood[state.equipped[slot]?.id]?.theme]||{wood:'#92704f',light:'#bc986b',cloth:'#bf9555',trim:'#e7d4a5'}}
-// Wear the exact album sprite, including rarity and saved custom stitches.
-const wornBounds=new WeakMap();
-function drawWornCraft(g,slot){const art=cachedArt(g);let bounds=wornBounds.get(art);if(!bounds){const ctx=art.getContext('2d'),pixels=ctx.getImageData(0,0,96,96).data;let left=96,top=96,right=-1,bottom=-1;for(let y=0;y<96;y++)for(let x=0;x<96;x++)if(pixels[(y*96+x)*4+3]){left=Math.min(left,x);top=Math.min(top,y);right=Math.max(right,x);bottom=Math.max(bottom,y)}if(right<left)return;bounds={left,top,sw:right-left+1,sh:bottom-top+1};wornBounds.set(art,bounds)}const {left,top,sw,sh}=bounds;const maxW=slot==='head'?54:54,maxH=slot==='head'?36:43,scale=Math.min(maxW/sw,maxH/sh),w=Math.round(sw*scale),h=Math.round(sh*scale);rc.imageSmoothingEnabled=false;rc.drawImage(art,left,top,sw,sh,-Math.round(w/2),slot==='head'?-63-h:-36,w,h)}
+// Tailored silhouettes share the album's stitch colors, rather than its flat shape.
+function wornPatch(g,x,y,w,h,sx=0,sy=0){for(let j=0;j<h;j+=3)for(let i=0;i<w;i+=3){box(x+i,y+j,Math.min(3,w-i),Math.min(3,h-j),stitchColor(g,sx+i/3,sy+j/3));box(x+i+1,y+j+1,1,1,'#fff4d733')}}
+function drawWornCraft(g,slot){const edge='#534237',accent=themes[g.c].accent;
+if(slot==='head'){box(-25,-75,50,14,edge);wornPatch(g,-23,-75,46,12,1,7);wornPatch(g,-17,-85,34,12,4,3);box(-26,-64,52,4,accent);box(-4,-92,9,7,accent);return}
+if(g.r==='bag'){
+// A cross-body strap, then a bag on the hip with a flap and buckle.
+line(-17,-35,24,-7,edge,5);for(let i=0;i<12;i++)box(-18+i*3,-36+i*2,4,3,stitchColor(g,i,5));
+frameBox(14,-20,23,25,themes[g.c].color,edge,2);wornPatch(g,16,-18,19,21,3,6);box(15,-18,21,7,accent);box(23,-12,5,6,edge);box(24,-11,3,3,'#f2d99a');box(35,-16,3,18,'#49352b55');return}
+if(g.r==='scarf'||g.r==='sausage'){
+// Collar follows the neck; the hanging end folds over it.
+box(-22,-35,44,10,edge);wornPatch(g,-21,-34,42,8,2,0);box(-18,-26,32,2,'#513f3444');box(11,-29,13,29,edge);wornPatch(g,12,-28,11,27,6,4);wornPatch(g,8,-33,16,9,5,2);for(let i=12;i<24;i+=4)box(i,-1,2,5,accent);
+if(g.r==='sausage'){box(14,-5,14,8,'#a76d43');box(25,-10,7,9,'#a76d43');box(29,-9,2,2,edge);box(25,-7,3,6,'#70482f');box(16,2,3,5,'#70482f');box(24,2,3,5,'#70482f')}return}
+// Torso, sleeves and ribbing sit below the face, with paws in front.
+frameBox(-18,-32,37,29,themes[g.c].color,edge,1);wornPatch(g,-17,-31,35,27,6,10);
+if(g.r!=='vest'){wornPatch(g,-26,-29,9,19,3,11);wornPatch(g,19,-29,9,19,18,11);box(-26,-12,9,3,accent);box(19,-12,9,3,accent)}
+box(-16,-6,33,4,accent);for(let x=-14;x<17;x+=4)box(x,-5,1,3,'#53423755');
+if(g.r==='cardigan'){line(-14,-33,0,-23,accent,3);line(14,-33,0,-23,accent,3);box(-1,-23,3,20,accent);for(let y=-21;y<-5;y+=6)box(0,y,2,2,edge)}else{box(-12,-34,25,4,accent);box(-8,-34,17,2,'#f8f3e8')}
+if(g.r==='hoodie'){line(-22,-36,-15,-43,themes[g.c].color,6);line(22,-36,15,-43,themes[g.c].color,6);frameBox(-9,-17,19,10,themes[g.c].color,accent,1);box(-9,-32,1,9,accent);box(9,-32,1,9,accent)}
+box(-25,-10,8,7,'#f8f3e8');box(20,-10,8,7,'#f8f3e8');
+}
 function drawCat(t){const knitting=state.running&&Math.abs(catX-320)<3,sleeping=state.sleeping&&Math.abs(catX-555)<3,walking=Math.abs(catX-catTarget)>3;const bob=reduceMotion.matches?0:walking?(Math.floor(t/150)%2)*2:knitting?(Math.floor(t/450)%2):0;rc.save();rc.translate(Math.round(catX),sleeping?304:294-bob);if(sleeping)rc.scale(1,.65);const scale=3,startX=-36,startY=-72;box(-28,0,60,5,'#5b4d3933');for(let y=0;y<24;y++)for(let x=0;x<24;x++){const p=catPixels[y][x];if(!catColors[p])continue;let color=catColors[p];if(sleeping&&(p==='G'||p==='K'))color=catColors.W;box(startX+x*scale,startY+y*scale,scale,scale,color);if(sleeping&&(p==='G'||p==='K')&&y===11)box(startX+x*scale,startY+y*scale+2,scale,1,catColors.D)}
 const head=state.equipped.head,body=state.equipped.body;if(body?.source==='shop'){if(body.id==='apron'){frameBox(-17,-29,35,29,'#7e9873','#617759',2);box(-9,-21,18,14,'#c1c9a1');box(-16,-31,4,8,'#dedbb8');box(14,-31,4,8,'#dedbb8')}else{box(-26,-33,52,15,'#8f91b3');box(-24,-18,13,18,'#8f91b3');box(13,-18,13,18,'#8f91b3');box(-19,-27,3,3,'#eee0a8');box(18,-25,3,3,'#eee0a8')}}else if(body?.source==='craft'){drawWornCraft(body,'body')}
 if(head?.source==='shop'){if(head.id==='bow'){box(-29,-69,12,9,'#bd7e8c');box(-12,-69,12,9,'#bd7e8c');box(-19,-67,9,6,'#efc4bf')}else{box(-27,-74,52,11,'#ad7855');box(-19,-80,35,8,'#bf9266');box(-2,-85,4,6,'#715840');box(-26,-65,51,4,'#855f42')}}else if(head?.source==='craft'){drawWornCraft(head,'head')}
