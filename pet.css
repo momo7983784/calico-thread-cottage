@@ -11,3 +11,5 @@
 .animal-dialogue{background:#f8efd9;border-left:3px solid #a38aa6;padding:9px;min-height:0!important}.animal-choices{display:flex;gap:6px}.animal-choices button[aria-pressed=true]{background:#d8dfca;border-color:#76826c}
 
 .postcard canvas{max-height:none;aspect-ratio:2/1;border:7px solid #fff9ed;box-sizing:border-box;box-shadow:0 2px 5px #67513c22}.photo-caption{display:block;color:#8b775f;font-size:10px;margin:6px 0}
+
+.animal-identity{display:flex;align-items:center;gap:10px;margin:8px 0 12px}.animal-identity small{margin:0;line-height:1.6}.letter .animal-avatar,.postcard .animal-avatar{width:64px;height:64px;max-height:none;flex:0 0 64px;margin:0;border:2px solid #c3ae8b;box-shadow:none;image-rendering:pixelated;object-fit:contain}
