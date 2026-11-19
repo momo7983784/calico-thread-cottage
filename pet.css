@@ -7,3 +7,5 @@
 .unfinished-projects{display:flex;gap:8px;align-items:end;margin:16px 0}.unfinished-projects label{flex:1;min-width:0;font-size:12px}.unfinished-projects select{display:block;width:100%;margin-top:6px}.unfinished-projects button{white-space:nowrap}
 
 .pattern-preview{opacity:1}.pattern-preview .pattern-swatch{width:40px;height:40px;image-rendering:pixelated;border:2px solid #c6b497;align-self:center}#albumPatternSection{margin:20px 0 32px}#albumPatterns{margin-top:14px}
+
+.animal-dialogue{background:#f8efd9;border-left:3px solid #a38aa6;padding:9px;min-height:0!important}.animal-choices{display:flex;gap:6px}.animal-choices button[aria-pressed=true]{background:#d8dfca;border-color:#76826c}
