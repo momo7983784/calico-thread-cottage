@@ -15,3 +15,5 @@
 .animal-identity{display:flex;align-items:center;gap:10px;margin:8px 0 12px}.animal-identity small{margin:0;line-height:1.6}.letter .animal-avatar,.postcard .animal-avatar{width:64px;height:64px;max-height:none;flex:0 0 64px;margin:0;border:2px solid #c3ae8b;box-shadow:none;image-rendering:pixelated;object-fit:contain}
 
 .test-panel{border:2px dashed #8d759f;background:#f0e8f3;padding:18px;margin:20px 0;color:#53475e}.test-panel h2{margin:0 0 10px}.test-panel p{font-size:13px;line-height:1.7}.test-controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:12px 0}.test-controls button,.test-controls select,.test-controls input{padding:8px;border:1px solid #aa96b5;background:#fffaf0;color:#53475e}.test-controls input[type=number]{width:70px}.test-panel canvas{width:144px;height:144px;image-rendering:pixelated;background:#fff8e9;border:1px solid #baa4bd}
+
+.test-quality-compare{display:flex;flex-wrap:wrap;gap:12px}.test-quality-compare figure{margin:0;text-align:center;background:#fff8ed;padding:12px}.test-quality-compare figcaption{font-size:12px;margin-top:8px}

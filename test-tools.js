@@ -5,7 +5,7 @@ panel.innerHTML='<h2>🧪 测试小屋</h2><p>这里使用独立测试存档。�
 document.querySelector('main').prepend(panel);
 const report=message=>{$('testResult').textContent=message;save();renderPatterns();renderLists();render();preview()};
 function sample(){return {r:state.recipe,c:state.theme,rank:$('testRank').value,pattern:currentPattern()?clone(currentPattern()):null}}
-function preview(){drawItem($('testPreview'),sample())}
+function preview(){drawItem($('testPreview'),sample());let comparison=$('testQualityCompare');if(!comparison){comparison=document.createElement('div');comparison.id='testQualityCompare';comparison.className='test-quality-compare';panel.append(comparison)}comparison.replaceChildren();for(const rank of ['R','SR','SSR']){const figure=document.createElement('figure'),art=document.createElement('canvas'),caption=document.createElement('figcaption');drawItem(art,{...sample(),rank});caption.textContent=rank+' · '+qualityDescriptions[rank];figure.append(art,caption);comparison.append(figure)}}
 function grant(){const g=sample(),base=g.r+'-'+g.c+'-'+g.rank;let id=base;if(g.pattern){id=base+'-'+g.pattern.id;g.customId=id;state.custom[id]={...g,count:(state.custom[id]?.count||0)+1}}else state.owned[id]=(state.owned[id]||0)+1;return {...g,id,count:g.pattern?state.custom[id].count:state.owned[id]}}
 $('testGrant').onclick=()=>{grant();report('所选成品已加入测试图鉴，可检查图案。')};
 $('testWear').onclick=()=>{if(['mittens','socks'].includes(state.recipe)){report('手套和袜子目前不支持猫猫穿戴，可在图鉴查看。');return}const g=grant();wearGift(g,g.r==='hat'?'head':'body');report('已生成并试穿；再次点击可脱下。')};
