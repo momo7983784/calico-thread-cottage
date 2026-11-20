@@ -18,13 +18,3 @@
 
 .test-quality-compare{display:flex;flex-wrap:wrap;gap:12px}.test-quality-compare figure{margin:0;text-align:center;background:#fff8ed;padding:12px}.test-quality-compare figcaption{font-size:12px;margin-top:8px}
 
-/* Soft SSR highlights: decorative only; never reveal locked items. */
-.ssr-art{position:relative;display:inline-block;width:96px;height:96px;vertical-align:middle;isolation:isolate;border-radius:12px;background:radial-gradient(ellipse,#f4dca12b,transparent 72%)}
-.ssr-art canvas{position:relative;z-index:1;width:96px!important;height:96px!important;max-width:100%;filter:drop-shadow(0 0 3px #d9bc7366)}
-.ssr-art::before{content:"";position:absolute;inset:8px;border-radius:50%;background:linear-gradient(115deg,transparent 30%,#fff7d38c 48%,transparent 65%);background-size:300% 100%;animation:ssr-sheen 7s ease-in-out infinite;pointer-events:none;z-index:2;opacity:0}
-.ssr-stars{position:absolute;left:9px;top:19px;color:#d5ad56;font-size:14px;line-height:1;z-index:3;pointer-events:none;text-shadow:65px 41px 0 #fff1ae;animation:ssr-twinkle 4.8s ease-in-out infinite}
-.ssr-stars::after{content:"✧";position:absolute;left:59px;top:-10px;font-size:11px;color:#e1bd70;animation:ssr-twinkle 4.8s ease-in-out -2.1s infinite}
-.card:nth-child(3n) .ssr-stars{animation-delay:-1.6s}.card:nth-child(3n+1) .ssr-art::before{animation-delay:-3s}
-@keyframes ssr-sheen{0%,55%,100%{background-position:100% 0;opacity:0}65%{opacity:.32}82%{background-position:0 0;opacity:0}}
-@keyframes ssr-twinkle{0%,100%{opacity:.15;transform:scale(.8)}45%{opacity:.9;transform:scale(1)}70%{opacity:.3}}
-@media(prefers-reduced-motion:reduce){.ssr-art::before{animation:none;opacity:0}.ssr-stars,.ssr-stars::after{animation:none;opacity:.55}}
