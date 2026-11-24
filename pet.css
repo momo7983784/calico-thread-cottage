@@ -40,3 +40,5 @@
 #studioExport,#bunnyUndress{background:#f3ead5;border:1px solid #cdbb98;padding:10px 14px;font:inherit;font-size:12px}
 @media(max-width:800px){.collection{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media(max-width:450px){.collection{grid-template-columns:repeat(2,minmax(0,1fr))}.card{padding:14px 10px}.card strong{font-size:12px}.card small{font-size:11px}.album-pagination{gap:10px}}
+
+.mail-area{display:flow-root;position:relative;isolation:isolate;clear:both}.postcards{padding:8px 0;gap:20px}.postcard{transform:none;min-width:0;max-width:100%}.tab-panel{position:relative;isolation:isolate}
