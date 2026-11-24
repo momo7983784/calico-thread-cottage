@@ -18,3 +18,5 @@
 
 .test-quality-compare{display:flex;flex-wrap:wrap;gap:12px}.test-quality-compare figure{margin:0;text-align:center;background:#fff8ed;padding:12px}.test-quality-compare figcaption{font-size:12px;margin-top:8px}
 
+
+.studio-layout{display:grid;grid-template-columns:minmax(0,2fr) minmax(220px,1fr);gap:24px}.studio-layout canvas{width:100%;height:auto;image-rendering:pixelated;border-radius:8px}.studio-controls{display:grid;gap:12px}.studio-controls label{display:grid;gap:5px}.studio-controls input,.studio-controls select{width:100%;box-sizing:border-box}.craft-book{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:20px 0}.book-card{padding:16px;border:1px solid #cdbf9e;background:#fff9ed;border-radius:8px}.book-card h3{margin-top:0}.book-card p{font-size:12px}@media(max-width:760px){.studio-layout{grid-template-columns:1fr}}
