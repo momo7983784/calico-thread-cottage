@@ -141,14 +141,15 @@ box(-4,-38,7,10,'#f0e8da');box(-2,-36,4,8,'#eee4d5');
 const earPose=bunnyEarPose(t,preview),ear=earPose.offset;
 box(-21,-39,9,8,'#c6bcb1');box(-25,-34,11,16,'#d5cbbf');
 box(-27,-24,10,12+ear,'#c6bcb1');box(-25,-13+ear,7,4,'#dfd5c8');
-box(-22,-32,4,17,'#e2d2ca');box(-25,-23,3,9,'#b8aea6');
+box(-22,-32,4,17,'#edc6bf');box(-25,-23,3,9,'#b8aea6');
 const raised=earPose.raised&&!b.outfits?.head;
-if(raised){box(12,-47,9,10,'#c4bab1');box(15,-57,9,14,'#cec3b7');box(17,-61,6,5,'#d8cec2');box(17,-55,4,13,'#e3d2cb');box(22,-54,2,9,'#b8aea5');box(12,-41,7,6,'#eee6d8')}
-else{box(13,-40,9,10,'#c6bcb1');box(17,-35,10,17,'#d5cbbf');box(20,-24,8,12-ear,'#c6bcb1');box(19,-13-ear,7,4,'#dfd5c8');box(19,-31,4,16,'#e2d2ca')}
+if(raised){box(12,-47,9,10,'#c4bab1');box(15,-57,9,14,'#cec3b7');box(17,-61,6,5,'#d8cec2');box(17,-55,4,13,'#f1ccc3');box(22,-54,2,9,'#b8aea5');box(12,-41,7,6,'#eee6d8')}
+else{box(13,-40,9,10,'#c6bcb1');box(17,-35,10,17,'#d5cbbf');box(20,-24,8,12-ear,'#c6bcb1');box(19,-13-ear,7,4,'#dfd5c8');box(19,-31,4,16,'#edc6bf')}
 if(!preview&&(t<bunnyHappyUntil||t%4400<140)){box(-12,-30,4,1,'#504941');box(8,-30,4,1,'#504941')}
 else{for(const x of [-12,8]){box(x,-33,4,6,'#302f2d');box(x+1,-34,2,1,'#504941');box(x,-32,1,2,'#fefcf5');box(x+2,-28,1,1,'#625e56')}}
 box(-10,-25,7,3,'#fffdf4');box(4,-25,7,3,'#fffdf4');
-box(-2,-26,4,1,'#b8a696');box(-1,-25,2,1,'#958578');
+box(-2,-26,4,1,'#d5a59e');box(-1,-25,2,1,'#b78681');
+const cheek=!preview&&t<bunnyHappyUntil?'#edc7be':'#f3dfd2';box(-14,-25,3,1,cheek);box(11,-25,3,1,cheek);
 box(0,-24,1,2,'#ad9b89');box(-2,-22,2,1,'#c1af9b');box(1,-22,2,1,'#c1af9b');
 for(const slot of ['body','neck','bag','head'])drawBunnyOutfit(b.outfits?.[slot]);box(-15,-3,10,5,'#fff8ee');box(5,-3,10,5,'#fff8ee');box(-24,-14,8,8,'#f9f1e5');box(-25,-12,9,4,'#fffaf0');
 if(!preview&&t<bunnyHappyUntil){rc.fillStyle='#c36c79';rc.font='14px sans-serif';rc.fillText('♥',-3,-51)}if(!preview&&t<bunnySnackUntil){box(-3,-23,5,11,'#df964d');box(-2,-25,5,3,'#7b9862')}}
@@ -589,10 +590,30 @@ wornMotif(g,['cardigan','sailor','polo','halfzip'].includes(g.r)?-13:-7,-18,1);
 // Restore the original front paws and toes in front of the hem.
 for(let row=22;row<24;row++)for(let col=0;col<24;col++){const color=catColors[catPixels[row][col]];if(color)box(-36+col*3,-72+row*3,3,3,color)}
 }
+// Fine pixel accents share the original silhouette and garment anchors.
+function drawCatFaceDetails(sleeping,blink,gaze){
+// Asymmetric tabby stripes and the small apricot crown patch.
+box(-12,-56,3,7,'#534d43');box(-19,-53,2,5,'#62594b');
+box(7,-56,3,7,'#534d43');box(14,-52,2,6,'#62594b');
+box(-6,-57,5,2,'#dfa565');box(-4,-54,3,3,'#d59a5e');
+box(-22,-63,2,6,'#f0c7bc');box(13,-63,2,6,'#f0c7bc');
+// White blaze widens into the muzzle, beneath warm amber eyes.
+box(-4,-49,5,12,'#fffaf0');box(-7,-41,11,7,'#fffaf0');
+for(const x of [-21,6]){
+ box(x,-42,9,7,'#f8f3e8');
+ if(sleeping||blink){box(x,-38,8,1,'#65594c');box(x+1,-37,6,1,'#b9ab94');}
+ else{box(x,-42,8,1,'#65594c');box(x,-41,9,5,'#b88e42');box(x+1,-41,7,4,'#e4bc5e');box(x+2,-37,5,1,'#f2d17f');box(x+3+gaze,-41,3,5,'#302e2b');box(x+3+gaze,-41,1,2,'#fffdf4');}
+}
+box(-6,-33,9,3,'#fffaf1');box(-5,-33,6,2,'#dca8a3');box(-3,-31,2,2,'#b87e7d');
+box(-3,-29,1,2,'#b5a398');box(-6,-27,3,1,'#d2c1b1');box(-2,-27,3,1,'#d2c1b1');
+box(-18,-31,7,1,'#d5c8b6');box(-20,-28,8,1,'#e0d4c2');box(7,-31,7,1,'#d5c8b6');box(8,-28,8,1,'#e0d4c2');
+box(-13,-24,6,1,'#e6dbca');box(2,-24,6,1,'#e6dbca');
+}
 function drawCat(t){const knitting=state.running&&Math.abs(catX-320)<3,sleeping=state.sleeping&&Math.abs(catX-555)<3,walking=Math.abs(catX-catTarget)>3;const bob=reduceMotion.matches?0:walking?(Math.floor(t/150)%2)*2:knitting?(Math.floor(t/450)%2):0;rc.save();rc.translate(Math.round(catX),sleeping?304:294-bob);if(sleeping)rc.scale(1,.65);const gaze=!sleeping&&state.bunny.active&&Math.abs(bunnyDrawX-catX)<110?Math.sign(bunnyDrawX-catX):0,blink=!sleeping&&!reduceMotion.matches&&t%5300<120;const scale=3,startX=-36,startY=-72;box(-28,0,60,5,'#5b4d3933');for(let y=0;y<24;y++)for(let x=0;x<24;x++){const p=catPixels[y][x];if(!catColors[p])continue;let color=catColors[p];if(sleeping&&(p==='G'||p==='K'))color=catColors.W;box(startX+x*scale,startY+y*scale,scale,scale,color);if(p==='K'&&!sleeping){box(startX+x*scale,startY+y*scale,scale,scale,catColors.G);box(startX+x*scale+gaze,startY+y*scale+(blink?2:0),scale,blink?1:scale,catColors.K)}if(sleeping&&(p==='G'||p==='K')&&y===11)box(startX+x*scale,startY+y*scale+2,scale,1,catColors.D)}
 const head=state.equipped.head,body=state.equipped.body;if(body?.source==='shop'){if(body.id==='apron'){frameBox(-17,-29,35,29,'#7e9873','#617759',2);box(-9,-21,18,14,'#c1c9a1');box(-16,-31,4,8,'#dedbb8');box(14,-31,4,8,'#dedbb8')}else{box(-26,-33,52,15,'#8f91b3');box(-24,-18,13,18,'#8f91b3');box(13,-18,13,18,'#8f91b3');box(-19,-27,3,3,'#eee0a8');box(18,-25,3,3,'#eee0a8')}}else if(body?.source==='craft'){drawWornCraft(body,'body')}
 // Face is in front of every neck accessory, including shop garments.
 if(body){for(let y=0;y<=16;y++)for(let x=0;x<24;x++){const p=catPixels[y][x];let color=catColors[p];if(!color)continue;if(sleeping&&(p==='G'||p==='K'))color=catColors.W;box(-36+x*3,-72+y*3,3,3,color);if(p==='K'&&!sleeping){box(-36+x*3,-72+y*3,3,3,catColors.G);box(-36+x*3+gaze,-72+y*3+(blink?2:0),3,blink?1:3,catColors.K)}if(sleeping&&(p==='G'||p==='K')&&y===11)box(-36+x*3,-72+y*3+2,3,1,catColors.D)}}
+drawCatFaceDetails(sleeping,blink,gaze);
 if(head?.source==='shop'){if(head.id==='bow'){box(-29,-69,12,9,'#bd7e8c');box(-12,-69,12,9,'#bd7e8c');box(-19,-67,9,6,'#efc4bf')}else{box(-18,-76,27,4,'#bf9266');box(-23,-72,38,9,'#bf9266');box(-25,-63,42,5,'#ad7855');box(-2,-80,3,4,'#715840');for(let row=1;row<=5;row++)for(const col of [3,4,5,6,7,14,15,16,17,18]){const pixel=catPixels[row][col];if(pixel==='T'||pixel==='P')box(-36+col*3,-72+row*3,3,3,catColors[pixel])}box(-24,-57,40,3,'#855f42');box(-21,-57,34,1,'#d5b389')}}else if(head?.source==='craft'){drawWornCraft(head,'head')}
 if(knitting){rc.save();rc.translate(0,15);const c=themes[state.theme].color;const textile=document.createElement('canvas');drawItem(textile,{r:state.recipe,c:state.theme,rank:'R',pattern:currentPattern()},Math.max(.25,(state.progress[signature()]||0)/duration()));rc.drawImage(textile,-25,-31,50,46);for(let i=-13;i<18;i+=5)for(let j=-18;j<-2;j+=5){line(i,j,i+2,j+2,'#f5e1b477',1);line(i+2,j+2,i+4,j,'#f5e1b477',1)}const stitch=reduceMotion.matches?0:Math.floor(t/300)%2*5;line(-26,-25-stitch,23,-11,'#f5e2bd',2);line(28,-28+stitch,-19,-10,'#ead3a9',2);box(-26,-24-stitch,8,7,'#f4ecde');box(23,-24+stitch,8,7,'#f4ecde');line(21,-4,75,1,'#bc9275',1);rc.restore()}if(activity==='eat'&&!walking){box(-12,-25,4,4,'#bf9968');if(Math.floor(t/250)%2)box(-5,-29,3,3,'#e9c99b')}rc.restore();if(sleeping){rc.fillStyle='#f5e9c9';rc.font='12px monospace';rc.fillText('z Z z',catX+20,250)}if(t<heartUntil){rc.fillStyle='#c38283';rc.font='17px monospace';const up=reduceMotion.matches?0:(1600-(heartUntil-t))/50;rc.fillText('♥',catX-23,216-up);rc.fillText('♥',catX+22,207-up)}}
 room.onclick=e=>{const b=room.getBoundingClientRect(),x=(e.clientX-b.left)/b.width*640,y=(e.clientY-b.top)/b.height*360;if(x>=199&&x<=293&&y>=125&&y<=184){toggleTelevision();return}if(Math.abs(x-catX)<50&&y>200)$('pat').click()};
