@@ -332,44 +332,132 @@ function plant(x,y,scale=1){rc.save();rc.translate(x,y);rc.scale(scale,scale);fr
 function yarn(x,y,c){frameBox(x,y,17,15,c,'#886e56',1);for(let i=3;i<15;i+=4)line(x+2,y+i/2,x+13,y+i/2+6,'#ffe8c477',1)}
 function artifactSprite(g){const c=document.createElement('canvas');drawItem(c,g);return c}
 let artCache=new Map();function cachedArt(g){const k=JSON.stringify(g);if(!artCache.has(k)){if(artCache.size>100)artCache.clear();artCache.set(k,artifactSprite(g))}return artCache.get(k)}
+
+const tvChannels=['森林直播','水族箱','编织课堂'];
+function television(){if(!state.roomTV||typeof state.roomTV.on!=='boolean'||!Number.isInteger(state.roomTV.channel)||state.roomTV.channel<0||state.roomTV.channel>2)state.roomTV={on:false,channel:0};return state.roomTV}
+function toggleTelevision(){television().on=!television().on;save();updateTVControls()}
+function nextTelevisionChannel(){const v=television();v.channel=(v.channel+1)%tvChannels.length;v.on=true;save();updateTVControls()}
+function updateTVControls(){const v=television();$('tvPower').textContent=v.on?'关闭电视':'打开电视';$('tvChannel').textContent='换台 · '+tvChannels[v.channel];$('tvPower').setAttribute('aria-pressed',String(v.on))}
+function windowPhase(now=new Date()){const h=now.getHours()+now.getMinutes()/60;return h<5||h>=20?'night':h<8?'dawn':h<17?'day':'dusk'}
+function drawWindowLandscape(now=new Date()){
+const phase=windowPhase(now),p={night:['#263e61','#405c68','#304f50','#819d94'],dawn:['#ebc6af','#b8c1a0','#8eab8f','#789c7c'],day:['#b4d4dc','#a5bea1','#86a78c','#648a71'],dusk:['#e4ab96','#a5a48d','#718b80','#647b74']}[phase];
+rc.save();rc.beginPath();rc.rect(44,38,127,191);rc.clip();box(44,38,127,191,p[0]);
+if(phase==='night'){box(141,51,12,13,'#f3e7b7');box(138,49,9,10,p[0]);for(const [x,y] of [[60,56],[89,82],[126,44],[154,107],[72,109],[118,67]]){box(x,y,2,2,'#e8e5cc')}}
+else{box(phase==='dawn'?62:phase==='dusk'?145:138,phase==='day'?51:94,13,13,'#f8e6ad');box(58,66,28,3,'#f6eedc');box(64,63,17,3,'#f6eedc')}
+box(44,133,127,96,p[1]);box(44,170,127,59,p[2]);
+for(const x of [61,144]){box(x,136,5,58,p[3]);box(x-8,132,22,25,p[2]);box(x-4,122,16,20,p[1])}
+for(let x=48;x<170;x+=14){box(x,205+(x%3)*3,2,9,p[3]);box(x-2,204+(x%3)*3,6,2,phase==='night'?'#9cae9b':'#ece4b9')}
+rc.restore();
+}
+function drawInteractiveTV(t){
+const v=television();frameBox(205,128,82,46,'#37494d','#87938a',1);
+if(!v.on){box(208,131,75,39,'#415357');line(212,134,231,153,'#596b6b');return}
+const step=reduceMotion.matches?0:Math.floor(t/600)%4;
+rc.save();rc.beginPath();rc.rect(207,130,78,42);rc.clip();
+if(v.channel===0){box(207,130,78,42,'#b7d2c2');box(207,154,78,18,'#83a27e');box(269,135,8,8,'#f6e2a6');for(const x of [213,240,269]){box(x+3,148,3,17,'#8a795c');box(x-2,140,13,13,'#6c967c')}box(226+step*2,160,10,5,'#e5d4ad')}
+if(v.channel===1){box(207,130,78,42,'#608f9d');box(207,168,78,4,'#cabf94');for(const x of [211,267,277]){box(x,150,2,18,'#92b6a0');box(x-3,153,4,2,'#92b6a0')}for(const [x,y,c] of [[219,140,'#f2c789'],[253,153,'#dfaa9b']]){box(x+step*2,y,10,5,c);box(x-3+step*2,y-1,3,7,c);box(x+7+step*2,y+1,1,1,'#4b6268')}}
+if(v.channel===2){box(207,130,78,42,'#eee2c5');box(223,143,42,19,'#b4c69b');for(let y=145;y<161;y+=4)for(let x=225;x<264;x+=5){box(x,y,2,2,'#eef1d5');box(x+1,y+2,2,1,'#849c7d')}line(217,137+step,270,154,'#9a7954',2);line(271,137,219,154+step,'#b2916b',2)}
+rc.restore();
+}
+const tvBar=document.createElement('div');tvBar.className='care';tvBar.style.marginTop='8px';
+for(const [id,handler]of [['tvPower',toggleTelevision],['tvChannel',nextTelevisionChannel]]){const button=document.createElement('button');button.id=id;button.type='button';button.onclick=handler;tvBar.append(button)}
+room.insertAdjacentElement('afterend',tvBar);updateTVControls();
 function drawRoom(t){
 rc.imageSmoothingEnabled=false;
-const wood='#69432e',edge='#49352b',gold='#d7a15c',cream='#f0d6a0';
-const wall=state.equipped.wall?.id,wallColor=wall==='wallRose'?'#d8aa95':wall==='wallSage'?'#b8c399':'#e6c995';
+const wood='#896747',edge='#70563f',gold='#d6b47d',cream='#f4e8c9';
+const wall=state.equipped.wall?.id,wallColor=wall==='wallRose'?'#d8aa95':wall==='wallSage'?'#b8c399':'#f0e7d2';
 box(0,0,640,360,wallColor);drawHomeWall();
 // Plaster, exposed beams, and a consistent floor plane.
 for(let y=13;y<188;y+=12)for(let x=12;x<635;x+=16)box(x+(y%24?4:0),y,2,1,'#fff2ce33');
-box(0,182,640,55,'#8e9b70');for(let x=12;x<640;x+=64){frameBox(x,190,52,38,'#a4ad7c','#71835c',2);box(x+3,193,46,2,'#c1c592')}
+box(0,182,640,55,'#abb99a');for(let x=12;x<640;x+=64){frameBox(x,190,52,38,'#cad2b4','#91a283',2);box(x+3,193,46,2,'#e0e4cc')}
 box(0,181,640,5,'#d5be86');box(0,233,640,8,wood);box(0,233,640,2,gold);
-box(0,241,640,119,'#aa7449');for(let y=242;y<360;y+=20)for(let x=-((y/20|0)%2)*48;x<640;x+=96){box(x+1,y+1,94,18,['#bd8751','#c28d56','#b9814d'][(Math.abs(x/48|0)+(y/20|0))%3]);box(x+5,y+3,84,1,'#dbab6c');box(x+13,y+12,27,1,'#95623955');box(x+53,y+8,25,1,'#95623944')}
+box(0,241,640,119,'#ae8961');for(let y=242;y<360;y+=20)for(let x=-((y/20|0)%2)*48;x<640;x+=96){box(x+1,y+1,94,18,['#c8a77c','#ceb18c','#c4a179'][(Math.abs(x/48|0)+(y/20|0))%3]);box(x+5,y+3,84,1,'#e4cba4');box(x+13,y+12,27,1,'#95623955');box(x+53,y+8,25,1,'#95623944')}
 box(0,0,640,12,wood);box(0,12,640,3,gold);box(0,15,640,4,'#5a3b2922');for(const x of [0,628]){box(x,0,12,242,wood);box(x+3,16,3,216,'#a77448');box(x+8,16,2,216,'#4f372b')}
-// Deep window reveal and stepped curtains.
-const win=furniturePalette('window');frameBox(36,30,143,126,'#543f30',edge,3);frameBox(42,34,131,116,'#97bec5',cream,4);box(47,107,121,38,'#8eaa81');box(47,129,121,16,'#658968');box(137,47,15,15,'#f7df99');box(59,62,31,4,'#e7ebd5');box(65,58,19,4,'#e7ebd5');for(const x of [56,78,143]){box(x,113,6,22,'#527a5e');box(x-4,118,14,12,'#608869')}
-box(105,38,5,108,cream);box(45,88,126,5,cream);frameBox(30,151,156,9,gold,wood,2);box(34,152,148,2,'#f3d39a');
-if(!state.equipped.curtainTextile)for(const x of [29,159]){box(x,29,24,117,win.wood);box(x+3,31,18,112,win.cloth);for(let i=0;i<18;i+=6)box(x+4+i,32,2,109,win.trim+'77');box(x-1,111,26,5,gold);box(x+5,118,3,26,win.trim)}drawHomeCurtains();box(25,24,165,4,wood);box(23,22,6,8,gold);box(187,22,6,8,gold);
+// Full-height window, retaining the textile rails and unscaled pattern pixels.
+const win=furniturePalette('window');
+frameBox(36,30,143,207,'#8c795f',edge,2);frameBox(40,34,135,199,'#b4d4d5',cream,3);
+drawWindowLandscape();
+box(105,37,5,195,cream);box(43,106,129,4,cream);box(43,173,129,4,cream);
+box(101,148,2,9,wood);box(113,148,2,9,wood);
+frameBox(33,232,149,7,gold,wood,1);box(35,233,145,2,'#f3e5c7');
+if(!state.equipped.curtainTextile)for(const x of [29,159]){
+box(x,29,24,199,win.wood);box(x+3,31,18,195,win.cloth);
+for(let i=0;i<18;i+=6)box(x+4+i,32,2,192,win.trim+'77');
+box(x-1,151,26,4,gold);box(x+5,158,3,67,win.trim)}
+drawHomeCurtains();box(25,24,165,4,wood);box(23,22,6,8,gold);box(187,22,6,8,gold);
 // Clock, framed handwork, and two warm sconces.
 frameBox(230,36,40,42,wood,edge,2);frameBox(235,41,30,30,cream,gold,2);line(250,55,250,46,wood,2);line(250,55,259,59,wood,2);box(239,74,23,3,gold);
 frameBox(307,37,77,72,wood,edge,2);frameBox(312,42,67,62,cream,gold,2);if(state.equipped.display?.source==='craft')rc.drawImage(cachedArt(state.equipped.display),318,45,55,55);else{box(321,51,49,39,'#afc1af');box(323,76,45,13,'#6b8f6b');box(340,65,13,22,'#cb9b62');box(336,62,21,5,'#8b6046');box(345,76,5,11,wood)}
 for(const x of [207,418]){box(x-2,90,6,26,wood);box(x-6,110,14,4,gold);frameBox(x-8,76,20,19,'#ebc882',wood,2);box(x-4,78,12,13,'#fbe4aa')}
 // All floor textiles precede every freestanding object.
 drawFloorTextiles();
-// Television console: top, front, side, feet.
-const tv=furniturePalette('tv');box(32,265,160,6,'#46302544');box(39,251,8,17,wood);box(176,251,8,17,wood);frameBox(33,216,153,44,tv.wood,edge,2);box(179,218,7,40,'#533a2c');frameBox(38,220,66,34,tv.light,wood,2);frameBox(108,220,66,34,tv.light,wood,2);for(const x of [42,112]){box(x,224,56,2,tv.trim);box(x+24,235,10,3,gold)}frameBox(29,207,160,11,tv.light,wood,2);box(33,208,151,2,tv.trim);
-frameBox(48,155,124,53,tv.wood,edge,3);frameBox(54,160,97,41,'#344c4d',gold,2);box(158,168,6,6,gold);box(158,180,6,6,gold);for(let y=192;y<203;y+=3)box(156,y,10,1,edge);box(57,163,3,32,'#bed0bb33');
-if(state.running){box(58,164,89,32,themes[state.theme].color);box(65+(reduceMotion.matches?0:Math.floor(t/900)%4)*5,170,22,5,'#efe0b9');box(113,169,11,11,themes[state.theme].accent);box(58,193,89,7,'#627b58')}
-// Upholstered chair with seat depth and rounded pixel corners.
-box(269,306,109,7,'#49322a44');for(const x of [281,359])box(x,298,8,13,wood);box(281,207,86,91,edge);box(287,201,74,99,edge);box(285,209,78,85,'#9b4e38');box(290,205,68,83,'#be714c');frameBox(291,214,65,56,'#c78155','#854833',2);box(295,216,57,3,'#e2a36a');frameBox(284,273,81,24,'#b66545',wood,2);box(288,275,73,5,'#d8945e');box(288,293,73,3,'#844734');for(const x of [274,360]){frameBox(x,255,15,46,'#a65a3e',edge,2);box(x+2,257,11,5,'#dfa069');box(x+3,265,3,30,'#c57c50')}
-frameBox(293,233,26,27,'#e6c580','#95643f',2);box(304,239,4,15,'#b58c4d');box(299,245,14,3,'#b58c4d');
-// A hanging yarn cabinet, with inset shelves and real skeins.
-const st=furniturePalette('storage');box(488,126,124,102,'#47332922');frameBox(488,118,121,106,st.light,edge,3);box(600,122,6,99,st.wood);for(let y=124;y<220;y+=31){box(494,y,105,24,st.wood);box(495,y+1,104,3,'#48332966');for(let i=0;i<5;i++)yarn(498+i*20,y+8,[st.cloth,st.trim,'#c47d66','#8caa96','#b7a2b3'][i]);box(491,y+25,112,5,st.light);box(494,y+25,106,1,st.trim)}box(485,114,126,6,wood);box(488,115,120,2,gold);
-// Writing desk has a visible top plane, drawers and small daily objects.
-const d=furniturePalette('desk');box(483,283,133,5,'#49322a33');for(const x of [490,603]){box(x,249,7,35,wood);box(x+1,251,2,28,d.light)}frameBox(562,248,45,29,d.light,wood,2);box(565,261,39,2,d.wood);for(const y of [254,268])box(580,y,9,2,gold);frameBox(482,234,135,16,d.light,wood,2);box(485,236,129,3,d.trim);box(486,246,128,3,d.wood);frameBox(502,229,33,8,'#eeddad',wood,1);box(518,230,1,6,'#bba37c');for(let y=232;y<237;y+=2)box(505,y,10,1,'#b5a185');frameBox(578,220,15,15,d.cloth,wood,1);line(583,220,581,210,wood);line(588,220,591,208,gold);frameBox(547,230,13,8,'#f0d9ad',wood,1);box(559,231,4,4,cream);
-// Woven cat bed, back rim before the cat, front rim after it.
-const bed=furniturePalette('bed');box(510,328,101,6,'#49322a33');box(517,291,88,37,wood);box(511,299,100,24,wood);box(515,298,92,27,bed.light);frameBox(520,299,82,24,bed.cloth,bed.wood,2);box(525,301,72,3,bed.trim);for(let x=519;x<605;x+=7){box(x,295,3,3,bed.trim);box(x,324,3,4,bed.wood)}frameBox(578,300,20,12,bed.trim,bed.light,2);
+
+// Television on the solid wall beside the window; cabinet feet meet the floor.
+const tv=furniturePalette('tv');
+box(201,262,91,3,'#70563f22');
+for(const x of [207,281]){box(x,251,4,12,wood);box(x+1,253,2,8,tv.light)}
+frameBox(202,189,88,64,tv.light,wood,1);box(204,191,84,2,tv.trim);
+for(const x of [206,248]){frameBox(x,196,38,52,tv.light,tv.wood,1);box(x+2,198,34,1,tv.trim);box(x+29,219,3,6,wood)}
+frameBox(199,184,94,6,tv.light,wood,1);box(201,185,90,2,tv.trim);
+frameBox(202,125,88,53,'#666b68','#515952',2);
+drawInteractiveTV(t);
+box(245,175,3,1,'#c5d5b6');line(218,178,214,184,'#515952',2);line(274,178,278,184,'#515952',2);
+
+// Rounded stepped upholstered silhouette using the same pixel grid as the cat.
+box(270,306,105,5,'#70563f22');
+for(const x of [282,357]){box(x,296,6,14,wood);box(x+1,299,2,9,gold)}
+box(286,199,70,4,'#7c8d69');box(280,203,82,5,'#7c8d69');
+frameBox(276,208,90,86,'#9dae84','#7c8d69',2);
+box(282,206,78,6,'#bdc99f');box(279,214,4,48,'#b3c397');
+frameBox(286,215,70,56,'#b6c49b','#94a67c',1);
+box(291,217,60,3,'#d2ddbb');box(289,224,2,38,'#c8d4ad');
+for(const x of [302,338]){box(x,239,3,2,'#91a37b');box(x,241,3,1,'#d5dfbc')}
+frameBox(282,271,80,27,'#a8ba8f','#7d906c',2);
+box(287,273,70,5,'#c6d3ad');box(287,294,70,2,'#8a9c75');
+for(const x of [270,359]){frameBox(x,257,15,43,'#a2b489','#7c8d69',2);box(x+2,259,11,7,'#ced9b3');box(x+3,270,2,25,'#bdcba1')}
+frameBox(280,259,15,40,'#f0e4c5','#c5b68f',1);
+for(let y=262;y<297;y+=6){box(281,y,13,2,'#ccbc94');box(285,y,2,5,'#fff3d5')}
+for(let x=281;x<295;x+=3)box(x,299,1,5,'#f0e4c5');
+
+
+// Freestanding yarn cabinet: distinct legs, cubbies and lower storage.
+const st=furniturePalette('storage');
+box(487,277,126,4,'#70563f22');
+for(const x of [492,600])box(x,269,5,10,wood);
+frameBox(487,120,122,152,st.light,wood,2);
+box(492,114,112,6,wood);box(496,110,104,4,wood);
+box(494,117,108,3,st.trim);box(490,123,116,3,st.trim);
+for(let row=0;row<3;row++)for(let col=0;col<3;col++){
+const x=493+col*37,y=131+row*30;
+frameBox(x,y,33,25,st.wood,wood,1);box(x+1,y+1,31,3,'#70563f33');
+yarn(x+2,y+8,[st.cloth,'#cfa69a','#b5c4a1'][col]);yarn(x+14,y+9,['#ead9af','#a3b8bf',st.trim][row]);
+box(x,y+24,33,3,st.trim)}
+for(const x of [493,549]){frameBox(x,225,53,39,st.light,st.wood,1);box(x+3,228,47,2,st.trim);box(x+23,242,7,3,wood)}
+
+
+// Compact desk next to storage, leaving clear floor space for the cat bed.
+const d=furniturePalette('desk');
+box(393,275,84,4,'#70563f22');
+for(const x of [397,466]){box(x,236,5,40,wood);box(x+1,240,2,32,d.light)}
+frameBox(394,232,79,15,d.light,wood,1);box(398,235,71,2,d.trim);box(428,240,10,2,gold);
+frameBox(389,226,90,7,d.light,wood,1);box(392,227,84,2,d.trim);
+frameBox(400,217,28,9,'#f2e7cc','#b79b74',1);box(413,219,1,6,'#c7b493');
+for(let y=220;y<225;y+=2)box(402,y,8,1,'#baa98a');
+frameBox(455,215,10,11,d.cloth,wood,1);line(458,216,457,207,wood);line(462,216,464,208,gold);
+
+
+// Low rounded basket: back rim behind sleeping cat; front rim drawn afterwards.
+const bed=furniturePalette('bed');
+box(511,330,96,4,'#70563f22');box(523,292,74,3,wood);
+frameBox(515,295,90,31,bed.light,wood,2);frameBox(510,301,100,20,bed.light,wood,2);
+frameBox(519,298,82,23,bed.cloth,bed.wood,1);box(524,300,72,4,bed.trim);
+for(let x=516;x<606;x+=6){box(x,314,2,11,bed.wood);box(x,315,2,1,bed.trim)}
+box(515,322,90,4,bed.light);box(519,326,82,2,wood);
+
 // Yarn basket beside the chair.
 frameBox(397,283,38,30,'#bd915a',wood,2);for(let x=400;x<434;x+=5)box(x,287,2,24,'#e0b67a');for(let y=290;y<313;y+=5)box(399,y,34,1,'#8c623e');yarn(399,277,'#b86e62');yarn(416,275,themes[state.theme].color);box(396,288,40,3,gold);
 frameBox(55,310,47,14,'#7b9f9b','#466b69',2);box(59,312,39,3,'#dacb9e');
-if(state.equipped.plant)plant(198,235,.8);if(state.equipped.lamp){box(458,177,3,111,wood);box(447,285,24,4,wood);frameBox(442,157,35,23,'#e8c88c',wood,2);box(447,153,25,6,cream)}
+if(state.equipped.plant)plant(198,235,.8);if(state.equipped.lamp){rc.save();rc.translate(-65,0);box(458,177,3,111,wood);box(447,285,24,4,wood);frameBox(442,157,35,23,'#e8c88c',wood,2);box(447,153,25,6,cream);rc.restore()}
 if(state.equipped.shelf){frameBox(390,128,82,39,'#b68c5d',wood,2);const entries=collectionEntries().filter(g=>g.count).slice(0,3);entries.forEach((g,i)=>rc.drawImage(cachedArt(g),394+i*24,132,24,26));box(389,164,84,4,gold)}
 drawChristmasDecor(t);drawCat(t);if(state.sleeping&&Math.abs(catX-555)<3){box(515,320,92,7,bed.light);for(let x=518;x<605;x+=6)box(x,322,2,4,bed.wood)}drawBunny(t);drawCuteDetails(t);if(state.sleeping)box(0,0,640,360,'#28375222');
 }
@@ -396,7 +484,7 @@ box(213,275,232,70,'#58402b22');frameBox(210,271,232,70,cloth,edge,2);frameBox(2
 for(let x=220;x<436;x+=18){box(x,280,4,2,edge);box(x+1,278,2,6,edge);box(x,330,4,2,edge);box(x+1,328,2,6,edge)}
 for(let x=237;x<421;x+=28){box(x,302,8,3,cream);box(x+3,299,2,9,cream)}
 for(let x=214;x<441;x+=6){box(x,269,1,2,cream);box(x,341,1,3,cream)}
-box(36,265,152,6,'#57403133');box(394,311,44,5,'#57403133');
+box(394,311,44,5,'#57403133');
 }
 function furniturePalette(slot){return furnitureThemes[byGood[state.equipped[slot]?.id]?.theme]||{wood:'#92704f',light:'#bc986b',cloth:'#bf9555',trim:'#e7d4a5'}}
 // Tailored silhouettes share the album's stitch colors, rather than its flat shape.
@@ -446,7 +534,7 @@ const head=state.equipped.head,body=state.equipped.body;if(body?.source==='shop'
 if(body){for(let y=0;y<=16;y++)for(let x=0;x<24;x++){const p=catPixels[y][x];let color=catColors[p];if(!color)continue;if(sleeping&&(p==='G'||p==='K'))color=catColors.W;box(-36+x*3,-72+y*3,3,3,color);if(sleeping&&(p==='G'||p==='K')&&y===11)box(-36+x*3,-72+y*3+2,3,1,catColors.D)}}
 if(head?.source==='shop'){if(head.id==='bow'){box(-29,-69,12,9,'#bd7e8c');box(-12,-69,12,9,'#bd7e8c');box(-19,-67,9,6,'#efc4bf')}else{box(-18,-76,27,4,'#bf9266');box(-23,-72,38,9,'#bf9266');box(-25,-63,42,5,'#ad7855');box(-2,-80,3,4,'#715840');for(let row=1;row<=5;row++)for(const col of [3,4,5,6,7,14,15,16,17,18]){const pixel=catPixels[row][col];if(pixel==='T'||pixel==='P')box(-36+col*3,-72+row*3,3,3,catColors[pixel])}box(-24,-57,40,3,'#855f42');box(-21,-57,34,1,'#d5b389')}}else if(head?.source==='craft'){drawWornCraft(head,'head')}
 if(knitting){rc.save();rc.translate(0,15);const c=themes[state.theme].color;const textile=document.createElement('canvas');drawItem(textile,{r:state.recipe,c:state.theme,rank:'R',pattern:currentPattern()},Math.max(.25,(state.progress[signature()]||0)/duration()));rc.drawImage(textile,-25,-31,50,46);for(let i=-13;i<18;i+=5)for(let j=-18;j<-2;j+=5){line(i,j,i+2,j+2,'#f5e1b477',1);line(i+2,j+2,i+4,j,'#f5e1b477',1)}const stitch=reduceMotion.matches?0:Math.floor(t/300)%2*5;line(-26,-25-stitch,23,-11,'#f5e2bd',2);line(28,-28+stitch,-19,-10,'#ead3a9',2);box(-26,-24-stitch,8,7,'#f4ecde');box(23,-24+stitch,8,7,'#f4ecde');line(21,-4,75,1,'#bc9275',1);rc.restore()}if(activity==='eat'&&!walking){box(-12,-25,4,4,'#bf9968');if(Math.floor(t/250)%2)box(-5,-29,3,3,'#e9c99b')}rc.restore();if(sleeping){rc.fillStyle='#f5e9c9';rc.font='12px monospace';rc.fillText('z Z z',catX+20,250)}if(t<heartUntil){rc.fillStyle='#c38283';rc.font='17px monospace';const up=reduceMotion.matches?0:(1600-(heartUntil-t))/50;rc.fillText('♥',catX-23,216-up);rc.fillText('♥',catX+22,207-up)}}
-room.onclick=e=>{const b=room.getBoundingClientRect(),x=(e.clientX-b.left)/b.width*640,y=(e.clientY-b.top)/b.height*360;if(Math.abs(x-catX)<50&&y>200)$('pat').click()};
+room.onclick=e=>{const b=room.getBoundingClientRect(),x=(e.clientX-b.left)/b.width*640,y=(e.clientY-b.top)/b.height*360;if(x>=199&&x<=293&&y>=125&&y<=184){toggleTelevision();return}if(Math.abs(x-catX)<50&&y>200)$('pat').click()};
 function animate(t){const dt=Math.min(.05,(t-lastFrame)/1000);lastFrame=t;if(!document.hidden){if(activity==='clean'&&state.bunny.mess.length){catTarget=state.bunny.mess[0].x-12;if(Math.abs(catX-catTarget)<3){if(!cleanStarted)cleanStarted=t;if(t-cleanStarted>1400){state.bunny.mess.shift();cleanStarted=0;save();render();if(!state.bunny.mess.length){activity='idle';say('地板干干净净，我的小爪子也辛苦啦。')}}}}else if(state.bunny.repairAt){activity='mend';catTarget=320}else if(state.running){catTarget=320;activity='knit'}else if(state.sleeping){catTarget=555;activity='sleep'}else if(activity==='eat'&&t<activityEnd){catTarget=78}else{if(activity!=='idle')activity='idle';if(t>nextWalk&&!reduceMotion.matches){catTarget=110+Math.random()*420;nextWalk=t+5000+Math.random()*6000}}if(reduceMotion.matches)catX=catTarget;else{const d=catTarget-catX;catX+=Math.sign(d)*Math.min(Math.abs(d),dt*62)}drawRoom(t)}requestAnimationFrame(animate)}
 // 免费静态版本：每个浏览器的存档互相独立，无需账号或服务器。
 async function initAccount(){accountReady=true;settle();save();renderPatterns();renderLists();render();accountUI()}
