@@ -130,27 +130,27 @@ if(pose.kind==='groom'){const lift=reduceMotion.matches?0:Math.floor(t/240)%2*3;
 if(pose.kind==='sniff'){box(0,-25,4,2,'#d49c9a');if(!reduceMotion.matches&&Math.floor(t/300)%2)box(4,-25,2,1,'#eed4c8')}
 if(pose.kind==='toy'){const push=reduceMotion.matches?0:Math.floor(t/350)%3*3;frameBox(15+push,-9,13,9,'#d2b98e','#a78a65',1);box(17+push,-7,9,1,'#eddbb8')}
 rc.restore()}
-function drawBunnyModel(t,b,preview=false){box(-17,-20,32,19,'#d9d0c6');box(-20,-16,38,13,'#e9e2d6');box(-14,-24,26,21,'#fff8ec');box(-9,-22,19,17,'#fffdf4');
+function drawBunnyModel(t,b,preview=false){box(-17,-20,32,19,'#d9cebd');box(-20,-16,38,13,'#eee4d3');box(-14,-24,26,21,'#fff8eb');box(-9,-22,19,17,'#fff8eb');
 // Cream coat, wide cheek fur and warm-grey ears from the user's rabbit.
-box(-10,-43,20,3,'#ded6ca');box(-14,-40,28,20,'#ded6ca');
-box(-18,-34,36,13,'#eee8da');box(-14,-39,28,21,'#fbf6e9');
-box(-17,-33,34,12,'#fffaee');box(-13,-23,26,7,'#f4eddf');
-box(-18,-27,3,5,'#fff9ec');box(15,-27,3,5,'#fff9ec');
-box(-10,-42,7,2,'#fffdf4');box(-2,-44,5,3,'#fffdf4');box(5,-42,5,2,'#fffdf4');
-box(-4,-38,7,10,'#f0e8da');box(-2,-36,4,8,'#eee4d5');
+box(-10,-43,20,3,'#d9cebd');box(-14,-40,28,20,'#d9cebd');
+box(-18,-34,36,13,'#eee4d3');box(-14,-39,28,21,'#fff8eb');
+box(-17,-33,34,12,'#fff8eb');box(-13,-23,26,7,'#eee4d3');
+box(-18,-27,3,5,'#fff8eb');box(15,-27,3,5,'#fff8eb');
+box(-10,-42,7,2,'#fff8eb');box(-2,-44,5,3,'#fff8eb');box(5,-42,5,2,'#fff8eb');
+
 const earPose=bunnyEarPose(t,preview),ear=earPose.offset;
-box(-21,-39,9,8,'#c6bcb1');box(-25,-34,11,16,'#d5cbbf');
-box(-27,-24,10,12+ear,'#c6bcb1');box(-25,-13+ear,7,4,'#dfd5c8');
-box(-22,-32,4,17,'#edc6bf');box(-25,-23,3,9,'#b8aea6');
+box(-21,-39,9,8,'#d9cebd');box(-25,-34,11,16,'#eee4d3');
+box(-27,-24,10,12+ear,'#d9cebd');box(-25,-13+ear,7,4,'#eee4d3');
+box(-22,-32,4,17,'#e7c4b9');box(-25,-23,3,9,'#d9cebd');
 const raised=earPose.raised&&!b.outfits?.head;
-if(raised){box(12,-47,9,10,'#c4bab1');box(15,-57,9,14,'#cec3b7');box(17,-61,6,5,'#d8cec2');box(17,-55,4,13,'#f1ccc3');box(22,-54,2,9,'#b8aea5');box(12,-41,7,6,'#eee6d8')}
-else{box(13,-40,9,10,'#c6bcb1');box(17,-35,10,17,'#d5cbbf');box(20,-24,8,12-ear,'#c6bcb1');box(19,-13-ear,7,4,'#dfd5c8');box(19,-31,4,16,'#edc6bf')}
+if(raised){box(12,-47,9,10,'#d9cebd');box(15,-57,9,14,'#eee4d3');box(17,-61,6,5,'#eee4d3');box(17,-55,4,13,'#e7c4b9');box(22,-54,2,9,'#d9cebd');box(12,-41,7,6,'#fff8eb')}
+else{box(13,-40,9,10,'#d9cebd');box(17,-35,10,17,'#eee4d3');box(20,-24,8,12-ear,'#d9cebd');box(19,-13-ear,7,4,'#eee4d3');box(19,-31,4,16,'#e7c4b9')}
 if(!preview&&(t<bunnyHappyUntil||t%4400<140)){box(-12,-30,4,1,'#504941');box(8,-30,4,1,'#504941')}
-else{for(const x of [-12,8]){box(x,-33,4,6,'#302f2d');box(x+1,-34,2,1,'#504941');box(x,-32,1,2,'#fefcf5');box(x+2,-28,1,1,'#625e56')}}
-box(-10,-25,7,3,'#fffdf4');box(4,-25,7,3,'#fffdf4');
+else{for(const x of [-12,8]){box(x,-33,4,6,'#302f2d');box(x,-32,1,2,'#fefcf5');}}
+box(-10,-25,7,3,'#fff8eb');box(4,-25,7,3,'#fff8eb');
 box(-2,-26,4,1,'#d5a59e');box(-1,-25,2,1,'#b78681');
-const cheek=!preview&&t<bunnyHappyUntil?'#edc7be':'#f3dfd2';box(-14,-25,3,1,cheek);box(11,-25,3,1,cheek);
-box(0,-24,1,2,'#ad9b89');box(-2,-22,2,1,'#c1af9b');box(1,-22,2,1,'#c1af9b');
+
+box(0,-24,1,2,'#c1af9b');
 for(const slot of ['body','neck','bag','head'])drawBunnyOutfit(b.outfits?.[slot]);box(-15,-3,10,5,'#fff8ee');box(5,-3,10,5,'#fff8ee');box(-24,-14,8,8,'#f9f1e5');box(-25,-12,9,4,'#fffaf0');
 if(!preview&&t<bunnyHappyUntil){rc.fillStyle='#c36c79';rc.font='14px sans-serif';rc.fillText('♥',-3,-51)}if(!preview&&t<bunnySnackUntil){box(-3,-23,5,11,'#df964d');box(-2,-25,5,3,'#7b9862')}}
 let lastSpeechAt=Date.now(),nextMurmur=Date.now()+45000;
@@ -341,7 +341,7 @@ $('savePattern').onclick=()=>{if(!cells.some(Boolean)){toast('先在格子里画
 $('patternCategory').onchange=renderPatterns;
 function renderPatterns(){const choice=$('patternChoice');choice.replaceChildren(new Option('跟随主题 · 自动搭配纹样',''));const groups={};for(const name of ['精选纹样','和服传统纹样','我的自绘']){const group=document.createElement('optgroup');group.label=name;groups[name]=group;choice.append(group)}$('patternList').replaceChildren();for(const p of allPatterns()){const category=patternCategory(p);groups[category].append(new Option(p.name,p.id));if($('patternCategory').value!=='all'&&$('patternCategory').value!==category)continue;const b=document.createElement('button');b.className='saved-pattern';const c=document.createElement('canvas');const n=patternSize(p);c.width=n;c.height=n;const x=c.getContext('2d');p.cells.forEach((v,i)=>{x.fillStyle=v||'#eee6d1';x.fillRect(i%n,Math.floor(i/n),1,1)});const label=document.createElement('span');label.textContent=p.name+' · '+n+'×'+n;b.append(c,label);b.onclick=()=>{editorDrafts[editorSize]=[...cells];editorSize=patternSize(p);cells=[...p.cells];cursor=0;$('patternName').value=p.name;paintEditor();if(!state.running){state.patternId=p.id;save();render();toast('已选用「'+p.name+'」，也可修改后另存。')}else toast('已载入画板；暂停编织后可切换纹样。')};$('patternList').append(b)}choice.value=state.patternId}
 
-const catPixels=["........................", "....TT..........TT......", "...TPPT........TPPT.....", "...TPPPT......TPPPT.....", "...TPPPTTOOOOTTPPPT.....", "...TTTTTDOOOTDDTTTT.....", "...TTDTTDOOWTDDTDTT.....", "...TTDTDTOWWWTDTDTT.....", "..TTTTTTWWWWWWTTTTTT....", "..TTTTWWWWWWWWWWTTTT....", "..TTDKGWWWWWWWWGKDTT....", "..TTWGGKWWWWWWKGGWTT....", "...WWWWWWWWWWWWWWWW.....", "...WWWWWWWPPWWWWWWW.....", "....WWWWWWWPWWWWWW......", ".....WWWWWWWWWWWW.......", "......WWWWWWWWWW........", ".....WWWWWWWWWTTW....D..", ".....WWWWWWWWTTTD...TD..", ".....WWWWWWWWTTTW..TTD..", ".....WWWWWWWWWWWW.DDT...", ".....WWWWWWWWWWWWTTT....", ".....WWWWW..WWWWW.......", "......PPP....PPP........"];
+const catPixels=["........................", "....TT..........TT......", "...TPPT........TPPT.....", "...TPPPT......TPPPT.....", "...TPPPTTOOOOTTPPPT.....", "...TTTTTTOOOTTTTTTT.....", "...TTTTTOOWWTTTTTTT.....", "...TTDTTOWWWTTDTTTT.....", "..TTTTTTWWWWWWTTTTTT....", "..TTTTWWWWWWWWWWTTTT....", "..TTDKGWWWWWWWWGKDTT....", "..TTWGGKWWWWWWKGGWTT....", "...WWWWWWWWWWWWWWWW.....", "...WWWWWWWPPWWWWWWW.....", "....WWWWWWWPWWWWWW......", ".....WWWWWWWWWWWW.......", "......WWWWWWWWWW........", ".....WWWWWWWWWTTW....D..", ".....WWWWWWWWTTTD...TD..", ".....WWWWWWWWTTTW..TTD..", ".....WWWWWWWWWWWW.DDT...", ".....WWWWWWWWWWWWTTT....", ".....WWWWW..WWWWW.......", "......PPP....PPP........"];
 // 房间以固定像素网格绘制，家具和衣物直接响应存档中的搭配。
 const room=$('room');let rc=room.getContext('2d');const catColors={D:'#403b35',T:'#89775f',O:'#ca8b4e',P:'#dfaaa8',G:'#c9a34e',K:'#302e2a',W:'#f8f3e8'};
 let cleanStarted=0,bunnyHappyUntil=0,bunnySnackUntil=0,bunnyDrawX=465;
@@ -590,24 +590,14 @@ wornMotif(g,['cardigan','sailor','polo','halfzip'].includes(g.r)?-13:-7,-18,1);
 // Restore the original front paws and toes in front of the hem.
 for(let row=22;row<24;row++)for(let col=0;col<24;col++){const color=catColors[catPixels[row][col]];if(color)box(-36+col*3,-72+row*3,3,3,color)}
 }
-// Fine pixel accents share the original silhouette and garment anchors.
+// Clustered features on the same three-pixel grid as the base sprite.
 function drawCatFaceDetails(sleeping,blink,gaze){
-// Asymmetric tabby stripes and the small apricot crown patch.
-box(-12,-56,3,7,'#534d43');box(-19,-53,2,5,'#62594b');
-box(7,-56,3,7,'#534d43');box(14,-52,2,6,'#62594b');
-box(-6,-57,5,2,'#dfa565');box(-4,-54,3,3,'#d59a5e');
-box(-22,-63,2,6,'#f0c7bc');box(13,-63,2,6,'#f0c7bc');
-// White blaze widens into the muzzle, beneath warm amber eyes.
-box(-4,-49,5,12,'#fffaf0');box(-7,-41,11,7,'#fffaf0');
-for(const x of [-21,6]){
- box(x,-42,9,7,'#f8f3e8');
- if(sleeping||blink){box(x,-38,8,1,'#65594c');box(x+1,-37,6,1,'#b9ab94');}
- else{box(x,-42,8,1,'#65594c');box(x,-41,9,5,'#b88e42');box(x+1,-41,7,4,'#e4bc5e');box(x+2,-37,5,1,'#f2d17f');box(x+3+gaze,-41,3,5,'#302e2b');box(x+3+gaze,-41,1,2,'#fffdf4');}
+for(const x of [-24,3]){
+ box(x,-42,15,6,catColors.W);
+ if(sleeping||blink){box(x+3,-39,9,3,catColors.D);}
+ else{box(x+3,-42,9,6,catColors.G);box(x+6+(gaze?Math.sign(gaze)*3:0),-42,3,6,catColors.K);box(x+3,-42,3,3,'#fff9eb');}
 }
-box(-6,-33,9,3,'#fffaf1');box(-5,-33,6,2,'#dca8a3');box(-3,-31,2,2,'#b87e7d');
-box(-3,-29,1,2,'#b5a398');box(-6,-27,3,1,'#d2c1b1');box(-2,-27,3,1,'#d2c1b1');
-box(-18,-31,7,1,'#d5c8b6');box(-20,-28,8,1,'#e0d4c2');box(7,-31,7,1,'#d5c8b6');box(8,-28,8,1,'#e0d4c2');
-box(-13,-24,6,1,'#e6dbca');box(2,-24,6,1,'#e6dbca');
+box(-6,-33,6,3,catColors.P);box(-3,-30,3,3,catColors.P);
 }
 function drawCat(t){const knitting=state.running&&Math.abs(catX-320)<3,sleeping=state.sleeping&&Math.abs(catX-555)<3,walking=Math.abs(catX-catTarget)>3;const bob=reduceMotion.matches?0:walking?(Math.floor(t/150)%2)*2:knitting?(Math.floor(t/450)%2):0;rc.save();rc.translate(Math.round(catX),sleeping?304:294-bob);if(sleeping)rc.scale(1,.65);const gaze=!sleeping&&state.bunny.active&&Math.abs(bunnyDrawX-catX)<110?Math.sign(bunnyDrawX-catX):0,blink=!sleeping&&!reduceMotion.matches&&t%5300<120;const scale=3,startX=-36,startY=-72;box(-28,0,60,5,'#5b4d3933');for(let y=0;y<24;y++)for(let x=0;x<24;x++){const p=catPixels[y][x];if(!catColors[p])continue;let color=catColors[p];if(sleeping&&(p==='G'||p==='K'))color=catColors.W;box(startX+x*scale,startY+y*scale,scale,scale,color);if(p==='K'&&!sleeping){box(startX+x*scale,startY+y*scale,scale,scale,catColors.G);box(startX+x*scale+gaze,startY+y*scale+(blink?2:0),scale,blink?1:scale,catColors.K)}if(sleeping&&(p==='G'||p==='K')&&y===11)box(startX+x*scale,startY+y*scale+2,scale,1,catColors.D)}
 const head=state.equipped.head,body=state.equipped.body;if(body?.source==='shop'){if(body.id==='apron'){frameBox(-17,-29,35,29,'#7e9873','#617759',2);box(-9,-21,18,14,'#c1c9a1');box(-16,-31,4,8,'#dedbb8');box(14,-31,4,8,'#dedbb8')}else{box(-26,-33,52,15,'#8f91b3');box(-24,-18,13,18,'#8f91b3');box(13,-18,13,18,'#8f91b3');box(-19,-27,3,3,'#eee0a8');box(18,-25,3,3,'#eee0a8')}}else if(body?.source==='craft'){drawWornCraft(body,'body')}
