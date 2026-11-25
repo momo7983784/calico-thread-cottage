@@ -123,13 +123,33 @@ $('removeBunnyOutfit').onclick=clearBunnyClothes;$('bunnyUndress').onclick=clear
 function drawBunnyOutfit(g){drawBunnyOutfitBase(g);if(g){atelierWorn(g,true);finishWorn(g,true)}if(!g||g.rank==='R')return;if(g.r==='hat'){return}else if(g.r==='bag'){qualityTrim(rc,g,8,3,12,true);qualityBadge(rc,g,16,-5,true)}else if(g.r==='scarf'||g.r==='sausage'){qualityTrim(rc,g,6,-2,8,true);qualityBadge(rc,g,-10,-14,true)}else{qualityTrim(rc,g,-11,-3,22,true);qualityBadge(rc,g,7,-13,true)}wornSparkles(g,true)}
 function drawBunnyOutfitBase(g){if(!g)return;const color=fabricPalette(g).base,accent=fabricPalette(g).accent;if(g.r==='hat'){drawKnittedHat(g,true);return}if(g.r==='bag'){line(-10,-14,13,-3,accent,2);wornPatch(g,8,-6,12,11,3,6);wornMotif(g,10,-4,1);return}if(g.r==='scarf'||g.r==='sausage'){wornPatch(g,-12,-14,24,3,2,0);wornPatch(g,6,-11,8,10,6,4);wornMotif(g,6,-10,1);return}wornPatch(g,-12,-14,24,12,6,9);box(-12,-2,24,2,accent);if(['cardigan','halfzip','polo','sailor'].includes(g.r)){box(0,-12,2,10,accent);wornMotif(g,-10,-11,1)}else wornMotif(g,-4,-11,1)}
 function renderBunny(){const b=state.bunny;$('bunnyOutfitNote').textContent=b.outfit?'兔兔穿着 '+Object.values(b.outfits).filter(Boolean).length+' 件手作，下次来会保留这套搭配。':'在已拥有的图鉴中选择「送兔兔穿」，兔兔会记住你的礼物。收藏仍保留。';$('removeBunnyOutfit').disabled=!b.outfit;$('bunnyStatus').textContent=b.active?'垂耳兔正在串门':b.mess.length||b.chewed?'兔兔离开了，留下一点小残局':'偶尔串门的垂耳白兔';$('cleanMess').textContent='收拾便便'+(b.mess.length?' · '+b.mess.length+' 处':'');$('cleanMess').disabled=!b.mess.length||!!b.repairAt||activity==='clean';$('mendScarf').disabled=!b.chewed||!!b.repairAt||activity==='clean';$('mendScarf').textContent=b.repairAt?'修补中 · '+Math.max(0,Math.ceil((b.repairAt-Date.now())/1000))+' 秒':'修补破损 · 20 秒';for(const id of ['petBunny','feedBunny','byeBunny'])$(id).disabled=!b.active;$('inviteBunny').disabled=b.active||!!b.mess.length||b.chewed||Date.now()<b.nextAt;$('bunnyNote').textContent=b.chewed?(b.damagedId?'兔兔啃坏了一件摆放中的作品，图鉴已标记破损。':'围巾样布被兔兔啃破了。')+'修补需 20 秒，不消耗毛线币。':'每次来访 30% 概率赠礼：焦糖 38%、奶油 26%、蓝莓 15%、冬青 9%、送福 4.5%、补丁 2.5%、隐藏 5%（赠礼内概率）。独立随机，无保底；礼物安静进篮。';}
-function drawBunny(t){const b=state.bunny;for(const m of b.mess){box(m.x,m.y,9,4,'#846544');box(m.x+2,m.y-3,6,4,'#9d7d55');box(m.x+4,m.y-5,3,3,'#b0956c')}if(b.chewed){box(380,313,32,6,'#c28d78');box(390,313,4,4,'#aa7449');box(402,315,4,4,'#aa7449');for(let i=0;i<5;i++)box(380+i*7,319+(i%2)*2,1,5,'#c28d78')}if(!b.active)return;const happy=t<bunnyHappyUntil;const x=happy?bunnyDrawX:(reduceMotion.matches?465:110+Math.abs(Math.sin(t/4400))*400),y=303-(reduceMotion.matches||happy?0:Math.floor(t/170)%2*3);bunnyDrawX=x;rc.save();rc.translate(Math.round(x),y);// Rounded stepped silhouette, long soft ears, and tiny tucked paws.
-drawBunnyModel(t,b);rc.restore()}
+function drawBunny(t){const b=state.bunny;for(const m of b.mess){box(m.x,m.y,9,4,'#846544');box(m.x+2,m.y-3,6,4,'#9d7d55');box(m.x+4,m.y-5,3,3,'#b0956c')}if(b.chewed){box(380,313,32,6,'#c28d78');box(390,313,4,4,'#aa7449');box(402,315,4,4,'#aa7449');for(let i=0;i<5;i++)box(380+i*7,319+(i%2)*2,1,5,'#c28d78')}if(!b.active){bunnyScene.active=false;return}const pose=bunnyScenePose(t);box(Math.round(pose.x)-15,304,30,3,'#65534225');rc.save();rc.translate(Math.round(pose.x),pose.y);// Rounded stepped silhouette, long soft ears, and tiny tucked paws.
+bunnyPoseSquash=pose.squash||0;bunnyRenderActivity=pose.kind;
+drawBunnyModel(t,b);bunnyPoseSquash=0;
+if(pose.kind==='groom'){const lift=reduceMotion.matches?0:Math.floor(t/240)%2*3;box(-10,-28-lift,8,7,'#fffaf0');box(4,-28-lift,8,7,'#fffaf0')}
+if(pose.kind==='sniff'){box(0,-25,4,2,'#d49c9a');if(!reduceMotion.matches&&Math.floor(t/300)%2)box(4,-25,2,1,'#eed4c8')}
+if(pose.kind==='toy'){const push=reduceMotion.matches?0:Math.floor(t/350)%3*3;frameBox(15+push,-9,13,9,'#d2b98e','#a78a65',1);box(17+push,-7,9,1,'#eddbb8')}
+rc.restore()}
 function drawBunnyModel(t,b,preview=false){box(-17,-20,32,19,'#d9d0c6');box(-20,-16,38,13,'#e9e2d6');box(-14,-24,26,21,'#fff8ec');box(-9,-22,19,17,'#fffdf4');
-box(-15,-40,29,23,'#e6dcd0');box(-11,-45,22,30,'#fff9ee');box(-18,-36,35,17,'#fff9ee');box(-13,-23,26,9,'#f5eade');
-const ear=preview||reduceMotion.matches?0:Math.floor(Math.sin(t/700)*2);box(-21,-40,8,27+ear,'#d8cdc3');box(-23,-34,9,25+ear,'#eee4d8');box(-22,-12+ear,7,5,'#eee4d8');box(-20,-33,4,20+ear,'#e5bdb7');box(13,-40,8,28-ear,'#d8cdc3');box(15,-34,9,24-ear,'#eee4d8');box(16,-12-ear,7,5,'#eee4d8');box(17,-33,4,20-ear,'#e5bdb7');
-if(!preview&&(t<bunnyHappyUntil||t%4400<140)){box(-8,-30,5,2,'#64534c');box(5,-30,5,2,'#64534c')}else{box(-8,-31,4,5,'#64534c');box(6,-31,4,5,'#64534c');box(-8,-31,1,2,'#fffdf4');box(6,-31,1,2,'#fffdf4')}
-box(-13,-25,6,3,'#edc5ba');box(8,-25,6,3,'#edc5ba');box(-1,-25,4,2,'#cf9794');box(0,-23,2,3,'#b79283');box(-3,-21,3,1,'#b79283');box(2,-21,3,1,'#b79283');
+// Cream coat, wide cheek fur and warm-grey ears from the user's rabbit.
+box(-10,-43,20,3,'#ded6ca');box(-14,-40,28,20,'#ded6ca');
+box(-18,-34,36,13,'#eee8da');box(-14,-39,28,21,'#fbf6e9');
+box(-17,-33,34,12,'#fffaee');box(-13,-23,26,7,'#f4eddf');
+box(-18,-27,3,5,'#fff9ec');box(15,-27,3,5,'#fff9ec');
+box(-10,-42,7,2,'#fffdf4');box(-2,-44,5,3,'#fffdf4');box(5,-42,5,2,'#fffdf4');
+box(-4,-38,7,10,'#f0e8da');box(-2,-36,4,8,'#eee4d5');
+const earPose=bunnyEarPose(t,preview),ear=earPose.offset;
+box(-21,-39,9,8,'#c6bcb1');box(-25,-34,11,16,'#d5cbbf');
+box(-27,-24,10,12+ear,'#c6bcb1');box(-25,-13+ear,7,4,'#dfd5c8');
+box(-22,-32,4,17,'#e2d2ca');box(-25,-23,3,9,'#b8aea6');
+const raised=earPose.raised&&!b.outfits?.head;
+if(raised){box(12,-47,9,10,'#c4bab1');box(15,-57,9,14,'#cec3b7');box(17,-61,6,5,'#d8cec2');box(17,-55,4,13,'#e3d2cb');box(22,-54,2,9,'#b8aea5');box(12,-41,7,6,'#eee6d8')}
+else{box(13,-40,9,10,'#c6bcb1');box(17,-35,10,17,'#d5cbbf');box(20,-24,8,12-ear,'#c6bcb1');box(19,-13-ear,7,4,'#dfd5c8');box(19,-31,4,16,'#e2d2ca')}
+if(!preview&&(t<bunnyHappyUntil||t%4400<140)){box(-12,-30,4,1,'#504941');box(8,-30,4,1,'#504941')}
+else{for(const x of [-12,8]){box(x,-33,4,6,'#302f2d');box(x+1,-34,2,1,'#504941');box(x,-32,1,2,'#fefcf5');box(x+2,-28,1,1,'#625e56')}}
+box(-10,-25,7,3,'#fffdf4');box(4,-25,7,3,'#fffdf4');
+box(-2,-26,4,1,'#b8a696');box(-1,-25,2,1,'#958578');
+box(0,-24,1,2,'#ad9b89');box(-2,-22,2,1,'#c1af9b');box(1,-22,2,1,'#c1af9b');
 for(const slot of ['body','neck','bag','head'])drawBunnyOutfit(b.outfits?.[slot]);box(-15,-3,10,5,'#fff8ee');box(5,-3,10,5,'#fff8ee');box(-24,-14,8,8,'#f9f1e5');box(-25,-12,9,4,'#fffaf0');
 if(!preview&&t<bunnyHappyUntil){rc.fillStyle='#c36c79';rc.font='14px sans-serif';rc.fillText('♥',-3,-51)}if(!preview&&t<bunnySnackUntil){box(-3,-23,5,11,'#df964d');box(-2,-25,5,3,'#7b9862')}}
 let lastSpeechAt=Date.now(),nextMurmur=Date.now()+45000;
@@ -325,7 +345,46 @@ const catPixels=["........................", "....TT..........TT......", "...TPP
 const room=$('room');let rc=room.getContext('2d');const catColors={D:'#403b35',T:'#89775f',O:'#ca8b4e',P:'#dfaaa8',G:'#c9a34e',K:'#302e2a',W:'#f8f3e8'};
 let cleanStarted=0,bunnyHappyUntil=0,bunnySnackUntil=0,bunnyDrawX=465;
 let catX=320,catTarget=320,activity='idle',activityEnd=0,heartUntil=0,nextWalk=performance.now()+4000,lastFrame=performance.now();const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)');
-function box(x,y,w,h,c){rc.fillStyle=c;rc.fillRect(Math.round(x),Math.round(y),w,h)}
+let bunnyScene={kind:'walk',until:0,last:0,target:465,arrived:false,active:false};
+function chooseBunnyActivity(previous,random=Math.random){
+const choices=[['sniff',3],['groom',3],['toy',2],['rest',3],['walk',2],['binky',1],['companion',2]].filter(([kind])=>kind!==previous);
+let pick=random()*choices.reduce((sum,[,weight])=>sum+weight,0);
+for(const [kind,weight]of choices){pick-=weight;if(pick<0)return kind}return 'rest'
+}
+function bunnyScenePose(t){
+if(!bunnyScene.active){bunnyScene={kind:'sniff',until:0,last:t,target:448,arrived:false,active:true}}
+if(bunnyScene.arrived&&t>=bunnyScene.until){
+const kind=chooseBunnyActivity(bunnyScene.kind);
+bunnyScene={...bunnyScene,kind,arrived:false,target:kind==='companion'?Math.min(480,catX+68):kind==='sniff'?448:kind==='toy'?390:kind==='rest'?470:kind==='walk'?140+Math.random()*340:bunnyDrawX}
+}
+const dt=Math.min(.05,Math.max(0,(t-bunnyScene.last)/1000));bunnyScene.last=t;
+const d=bunnyScene.target-bunnyDrawX;bunnyDrawX+=Math.sign(d)*Math.min(Math.abs(d),dt*55);
+const moving=Math.abs(bunnyScene.target-bunnyDrawX)>2;
+if(!moving&&!bunnyScene.arrived){bunnyScene.arrived=true;bunnyScene.started=t;bunnyScene.until=t+(bunnyScene.kind==='binky'?1800:bunnyScene.kind==='rest'?10000+Math.random()*8000:4500+Math.random()*4000)}
+const kind=moving?'walk':bunnyScene.kind;
+const elapsed=t-(bunnyScene.started||t);
+let squash=0,jump=0;
+if(kind==='binky'&&!reduceMotion.matches){
+if(elapsed<300)squash=4;
+else if(elapsed<1300)jump=Math.round(Math.sin((elapsed-300)/1000*Math.PI)*19);
+else if(elapsed<1500)squash=3;
+}
+if(kind==='rest'||kind==='companion')squash=reduceMotion.matches?9:Math.min(9,Math.floor(elapsed/100));
+return {x:bunnyDrawX,y:303-jump-(moving&&!reduceMotion.matches?Math.floor(t/150)%2*3:0),kind,squash}
+
+}
+let bunnyPoseSquash=0,bunnyRenderActivity='rest';
+function bunnyEarPose(t,preview=false){
+if(preview)return {raised:false,offset:1};
+const kind=bunnyRenderActivity;
+if(kind==='rest'||kind==='companion')return {raised:false,offset:2};
+if(t<bunnyHappyUntil||t<bunnySnackUntil)return {raised:false,offset:2};
+if(kind==='binky')return {raised:false,offset:reduceMotion.matches?0:Math.round(Math.sin((t-(bunnyScene.started||t))/160)*3)};
+if(kind==='sniff'||kind==='toy')return {raised:true,offset:0};
+if(kind==='walk')return {raised:false,offset:reduceMotion.matches?0:Math.floor(t/180)%2};
+return {raised:false,offset:0};
+}
+function box(x,y,w,h,c){rc.fillStyle=c;if(bunnyPoseSquash){const shift=Math.round(bunnyPoseSquash*.55);const map=v=>v<=-16?v+shift:v*(1-shift/16);const bottom=Math.round(map(y+h));y=Math.round(map(y));h=Math.max(1,bottom-y)}rc.fillRect(Math.round(x),Math.round(y),w,h)}
 function frameBox(x,y,w,h,c,edge='#785b40',thick=2){box(x,y,w,h,edge);box(x+thick,y+thick,w-thick*2,h-thick*2,c)}
 function line(x1,y1,x2,y2,c,width=2){rc.strokeStyle=c;rc.lineWidth=width;rc.beginPath();rc.moveTo(Math.round(x1),Math.round(y1));rc.lineTo(Math.round(x2),Math.round(y2));rc.stroke()}
 function plant(x,y,scale=1){rc.save();rc.translate(x,y);rc.scale(scale,scale);frameBox(-10,0,22,23,'#b87f58');box(-7,2,16,3,'#dfb287');line(1,-2,0,-31,'#5d7951');box(-16,-24,17,8,'#7e9a69');box(-11,-30,10,7,'#92ac78');box(2,-35,14,11,'#66885f');box(3,-24,7,15,'#87a46f');box(-3,-42,8,13,'#a2b882');rc.restore()}
@@ -336,7 +395,7 @@ let artCache=new Map();function cachedArt(g){const k=JSON.stringify(g);if(!artCa
 const tvChannels=['森林直播','水族箱','编织课堂'];
 function television(){if(!state.roomTV||typeof state.roomTV.on!=='boolean'||!Number.isInteger(state.roomTV.channel)||state.roomTV.channel<0||state.roomTV.channel>2)state.roomTV={on:false,channel:0};return state.roomTV}
 function toggleTelevision(){television().on=!television().on;save();updateTVControls()}
-function nextTelevisionChannel(){const v=television();v.channel=(v.channel+1)%tvChannels.length;v.on=true;save();updateTVControls()}
+function nextTelevisionChannel(){const v=television();v.channel=(v.channel+1)%tvChannels.length;v.on=true;save();updateTVControls();if(!state.sleeping)say(['树后面是不是藏着小松鼠？','这条小鱼又游回来了！','我也会这一针，等我织给你看。'][v.channel])}
 function updateTVControls(){const v=television();$('tvPower').textContent=v.on?'关闭电视':'打开电视';$('tvChannel').textContent='换台 · '+tvChannels[v.channel];$('tvPower').setAttribute('aria-pressed',String(v.on))}
 function windowPhase(now=new Date()){const h=now.getHours()+now.getMinutes()/60;return h<5||h>=20?'night':h<8?'dawn':h<17?'day':'dusk'}
 function drawWindowLandscape(now=new Date()){
@@ -368,10 +427,10 @@ const wood='#896747',edge='#70563f',gold='#d6b47d',cream='#f4e8c9';
 const wall=state.equipped.wall?.id,wallColor=wall==='wallRose'?'#d8aa95':wall==='wallSage'?'#b8c399':'#f0e7d2';
 box(0,0,640,360,wallColor);drawHomeWall();
 // Plaster, exposed beams, and a consistent floor plane.
-for(let y=13;y<188;y+=12)for(let x=12;x<635;x+=16)box(x+(y%24?4:0),y,2,1,'#fff2ce33');
+
 box(0,182,640,55,'#abb99a');for(let x=12;x<640;x+=64){frameBox(x,190,52,38,'#cad2b4','#91a283',2);box(x+3,193,46,2,'#e0e4cc')}
 box(0,181,640,5,'#d5be86');box(0,233,640,8,wood);box(0,233,640,2,gold);
-box(0,241,640,119,'#ae8961');for(let y=242;y<360;y+=20)for(let x=-((y/20|0)%2)*48;x<640;x+=96){box(x+1,y+1,94,18,['#c8a77c','#ceb18c','#c4a179'][(Math.abs(x/48|0)+(y/20|0))%3]);box(x+5,y+3,84,1,'#e4cba4');box(x+13,y+12,27,1,'#95623955');box(x+53,y+8,25,1,'#95623944')}
+box(0,241,640,119,'#ae8961');for(let y=242;y<360;y+=20)for(let x=-((y/20|0)%2)*48;x<640;x+=96){box(x+1,y+1,94,18,['#c8a77c','#ceb18c','#c4a179'][(Math.abs(x/48|0)+(y/20|0))%3]);box(x+5,y+3,84,1,'#e4cba4');box(x+16,y+12,16,1,'#a3835e44')}
 box(0,0,640,12,wood);box(0,12,640,3,gold);box(0,15,640,4,'#5a3b2922');for(const x of [0,628]){box(x,0,12,242,wood);box(x+3,16,3,216,'#a77448');box(x+8,16,2,216,'#4f372b')}
 // Full-height window, retaining the textile rails and unscaled pattern pixels.
 const win=furniturePalette('window');
@@ -459,7 +518,9 @@ frameBox(397,283,38,30,'#bd915a',wood,2);for(let x=400;x<434;x+=5)box(x,287,2,24
 frameBox(55,310,47,14,'#7b9f9b','#466b69',2);box(59,312,39,3,'#dacb9e');
 if(state.equipped.plant)plant(198,235,.8);if(state.equipped.lamp){rc.save();rc.translate(-65,0);box(458,177,3,111,wood);box(447,285,24,4,wood);frameBox(442,157,35,23,'#e8c88c',wood,2);box(447,153,25,6,cream);rc.restore()}
 if(state.equipped.shelf){frameBox(390,128,82,39,'#b68c5d',wood,2);const entries=collectionEntries().filter(g=>g.count).slice(0,3);entries.forEach((g,i)=>rc.drawImage(cachedArt(g),394+i*24,132,24,26));box(389,164,84,4,gold)}
-drawChristmasDecor(t);drawCat(t);if(state.sleeping&&Math.abs(catX-555)<3){box(515,320,92,7,bed.light);for(let x=518;x<605;x+=6)box(x,322,2,4,bed.wood)}drawBunny(t);drawCuteDetails(t);if(state.sleeping)box(0,0,640,360,'#28375222');
+drawChristmasDecor(t);drawCat(t);
+if(!state.sleeping&&Math.abs(catX-320)<3){box(272,282,10,17,'#a2b489');box(361,282,10,17,'#a2b489');box(274,282,6,2,'#ced9b3');box(363,282,6,2,'#ced9b3')}
+if(state.sleeping&&Math.abs(catX-555)<3){box(515,320,92,7,bed.light);for(let x=518;x<605;x+=6)box(x,322,2,4,bed.wood)}drawBunny(t);drawCuteDetails(t);if(state.sleeping)box(0,0,640,360,'#28375222');
 }
 function drawCuteDetails(t){
 if(activity==='eat'){for(let i=0;i<8;i++){if(t>activityEnd-2200&&i>3)continue;box(62+i%4*7,314+Math.floor(i/4)*3,4,2,'#9a633f')}}
@@ -528,10 +589,10 @@ wornMotif(g,['cardigan','sailor','polo','halfzip'].includes(g.r)?-13:-7,-18,1);
 // Restore the original front paws and toes in front of the hem.
 for(let row=22;row<24;row++)for(let col=0;col<24;col++){const color=catColors[catPixels[row][col]];if(color)box(-36+col*3,-72+row*3,3,3,color)}
 }
-function drawCat(t){const knitting=state.running&&Math.abs(catX-320)<3,sleeping=state.sleeping&&Math.abs(catX-555)<3,walking=Math.abs(catX-catTarget)>3;const bob=reduceMotion.matches?0:walking?(Math.floor(t/150)%2)*2:knitting?(Math.floor(t/450)%2):0;rc.save();rc.translate(Math.round(catX),sleeping?304:294-bob);if(sleeping)rc.scale(1,.65);const scale=3,startX=-36,startY=-72;box(-28,0,60,5,'#5b4d3933');for(let y=0;y<24;y++)for(let x=0;x<24;x++){const p=catPixels[y][x];if(!catColors[p])continue;let color=catColors[p];if(sleeping&&(p==='G'||p==='K'))color=catColors.W;box(startX+x*scale,startY+y*scale,scale,scale,color);if(sleeping&&(p==='G'||p==='K')&&y===11)box(startX+x*scale,startY+y*scale+2,scale,1,catColors.D)}
+function drawCat(t){const knitting=state.running&&Math.abs(catX-320)<3,sleeping=state.sleeping&&Math.abs(catX-555)<3,walking=Math.abs(catX-catTarget)>3;const bob=reduceMotion.matches?0:walking?(Math.floor(t/150)%2)*2:knitting?(Math.floor(t/450)%2):0;rc.save();rc.translate(Math.round(catX),sleeping?304:294-bob);if(sleeping)rc.scale(1,.65);const gaze=!sleeping&&state.bunny.active&&Math.abs(bunnyDrawX-catX)<110?Math.sign(bunnyDrawX-catX):0,blink=!sleeping&&!reduceMotion.matches&&t%5300<120;const scale=3,startX=-36,startY=-72;box(-28,0,60,5,'#5b4d3933');for(let y=0;y<24;y++)for(let x=0;x<24;x++){const p=catPixels[y][x];if(!catColors[p])continue;let color=catColors[p];if(sleeping&&(p==='G'||p==='K'))color=catColors.W;box(startX+x*scale,startY+y*scale,scale,scale,color);if(p==='K'&&!sleeping){box(startX+x*scale,startY+y*scale,scale,scale,catColors.G);box(startX+x*scale+gaze,startY+y*scale+(blink?2:0),scale,blink?1:scale,catColors.K)}if(sleeping&&(p==='G'||p==='K')&&y===11)box(startX+x*scale,startY+y*scale+2,scale,1,catColors.D)}
 const head=state.equipped.head,body=state.equipped.body;if(body?.source==='shop'){if(body.id==='apron'){frameBox(-17,-29,35,29,'#7e9873','#617759',2);box(-9,-21,18,14,'#c1c9a1');box(-16,-31,4,8,'#dedbb8');box(14,-31,4,8,'#dedbb8')}else{box(-26,-33,52,15,'#8f91b3');box(-24,-18,13,18,'#8f91b3');box(13,-18,13,18,'#8f91b3');box(-19,-27,3,3,'#eee0a8');box(18,-25,3,3,'#eee0a8')}}else if(body?.source==='craft'){drawWornCraft(body,'body')}
 // Face is in front of every neck accessory, including shop garments.
-if(body){for(let y=0;y<=16;y++)for(let x=0;x<24;x++){const p=catPixels[y][x];let color=catColors[p];if(!color)continue;if(sleeping&&(p==='G'||p==='K'))color=catColors.W;box(-36+x*3,-72+y*3,3,3,color);if(sleeping&&(p==='G'||p==='K')&&y===11)box(-36+x*3,-72+y*3+2,3,1,catColors.D)}}
+if(body){for(let y=0;y<=16;y++)for(let x=0;x<24;x++){const p=catPixels[y][x];let color=catColors[p];if(!color)continue;if(sleeping&&(p==='G'||p==='K'))color=catColors.W;box(-36+x*3,-72+y*3,3,3,color);if(p==='K'&&!sleeping){box(-36+x*3,-72+y*3,3,3,catColors.G);box(-36+x*3+gaze,-72+y*3+(blink?2:0),3,blink?1:3,catColors.K)}if(sleeping&&(p==='G'||p==='K')&&y===11)box(-36+x*3,-72+y*3+2,3,1,catColors.D)}}
 if(head?.source==='shop'){if(head.id==='bow'){box(-29,-69,12,9,'#bd7e8c');box(-12,-69,12,9,'#bd7e8c');box(-19,-67,9,6,'#efc4bf')}else{box(-18,-76,27,4,'#bf9266');box(-23,-72,38,9,'#bf9266');box(-25,-63,42,5,'#ad7855');box(-2,-80,3,4,'#715840');for(let row=1;row<=5;row++)for(const col of [3,4,5,6,7,14,15,16,17,18]){const pixel=catPixels[row][col];if(pixel==='T'||pixel==='P')box(-36+col*3,-72+row*3,3,3,catColors[pixel])}box(-24,-57,40,3,'#855f42');box(-21,-57,34,1,'#d5b389')}}else if(head?.source==='craft'){drawWornCraft(head,'head')}
 if(knitting){rc.save();rc.translate(0,15);const c=themes[state.theme].color;const textile=document.createElement('canvas');drawItem(textile,{r:state.recipe,c:state.theme,rank:'R',pattern:currentPattern()},Math.max(.25,(state.progress[signature()]||0)/duration()));rc.drawImage(textile,-25,-31,50,46);for(let i=-13;i<18;i+=5)for(let j=-18;j<-2;j+=5){line(i,j,i+2,j+2,'#f5e1b477',1);line(i+2,j+2,i+4,j,'#f5e1b477',1)}const stitch=reduceMotion.matches?0:Math.floor(t/300)%2*5;line(-26,-25-stitch,23,-11,'#f5e2bd',2);line(28,-28+stitch,-19,-10,'#ead3a9',2);box(-26,-24-stitch,8,7,'#f4ecde');box(23,-24+stitch,8,7,'#f4ecde');line(21,-4,75,1,'#bc9275',1);rc.restore()}if(activity==='eat'&&!walking){box(-12,-25,4,4,'#bf9968');if(Math.floor(t/250)%2)box(-5,-29,3,3,'#e9c99b')}rc.restore();if(sleeping){rc.fillStyle='#f5e9c9';rc.font='12px monospace';rc.fillText('z Z z',catX+20,250)}if(t<heartUntil){rc.fillStyle='#c38283';rc.font='17px monospace';const up=reduceMotion.matches?0:(1600-(heartUntil-t))/50;rc.fillText('♥',catX-23,216-up);rc.fillText('♥',catX+22,207-up)}}
 room.onclick=e=>{const b=room.getBoundingClientRect(),x=(e.clientX-b.left)/b.width*640,y=(e.clientY-b.top)/b.height*360;if(x>=199&&x<=293&&y>=125&&y<=184){toggleTelevision();return}if(Math.abs(x-catX)<50&&y>200)$('pat').click()};
