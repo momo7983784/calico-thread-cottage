@@ -422,16 +422,44 @@ rc.restore();
 const tvBar=document.createElement('div');tvBar.className='care';tvBar.style.marginTop='8px';
 for(const [id,handler]of [['tvPower',toggleTelevision],['tvChannel',nextTelevisionChannel]]){const button=document.createElement('button');button.id=id;button.type='button';button.onclick=handler;tvBar.append(button)}
 room.insertAdjacentElement('afterend',tvBar);updateTVControls();
+const panelButton=document.createElement('button');panelButton.type='button';panelButton.id='wallPanelToggle';
+function updatePanelButton(){panelButton.textContent=state.roomWainscot===true?'拆下护墙板':'装上护墙板';panelButton.setAttribute('aria-pressed',String(state.roomWainscot===true))}
+panelButton.onclick=()=>{state.roomWainscot=state.roomWainscot!==true;save();updatePanelButton();drawRoom(performance.now())};tvBar.append(panelButton);updatePanelButton();
+
+
+const floorOptions={original:'原木地板',honey:'浅蜂蜜木',cream:'奶油棋盘砖',parquet:'暖木拼花'};
+const floorLabel=document.createElement('label');floorLabel.textContent='地板 ';const floorSelect=document.createElement('select');floorSelect.id='roomFloor';floorSelect.setAttribute('aria-label','小屋地板');
+for(const [value,label]of Object.entries(floorOptions))floorSelect.add(new Option(label,value));
+floorSelect.onchange=()=>{state.roomFloor=floorSelect.value;save();drawRoom(performance.now())};floorLabel.append(floorSelect);tvBar.append(floorLabel);
+function drawRoomFloor(){
+const kind=Object.hasOwn(floorOptions,state.roomFloor)?state.roomFloor:'original';if(floorSelect.value!==kind)floorSelect.value=kind;
+rc.save();rc.beginPath();rc.rect(0,241,640,119);rc.clip();
+if(kind==='original'){box(0,241,640,119,'#ae8961');for(let y=242;y<360;y+=20)for(let x=-((y/20|0)%2)*48;x<640;x+=96){box(x+1,y+1,94,18,['#c8a77c','#ceb18c','#c4a179'][(Math.abs(x/48|0)+(y/20|0))%3]);box(x+5,y+3,84,1,'#e4cba4');box(x+16,y+12,16,1,'#a3835e44')}
+}
+else if(kind==='cream'){
+box(0,241,640,119,'#e2d3b9');for(let row=0;row<6;row++)for(let col=0;col<20;col++){box(col*32+1,241+row*24+1,31,23,(col+row)%2?'#e8dcc6':'#faf1df');}
+}else if(kind==='parquet'){
+box(0,241,640,119,'#b79268');for(let row=0;row<5;row++)for(let col=0;col<20;col++){const x=col*32,y=241+row*32;for(let i=0;i<4;i++){const vertical=(row+col)%2;box(x+(vertical?i*8:0)+1,y+(vertical?0:i*8)+1,vertical?7:31,vertical?31:7,['#d2ae7f','#dbba8b','#cba476','#dfbf93'][i]);}}
+}else{
+box(0,241,640,119,'#c9a879');for(let row=0;row<6;row++)for(let col=-1;col<9;col++){const x=col*96+(row%2)*48,y=241+row*22;box(x+1,y+1,95,21,['#e2c397','#e8cda6','#ddbd90'][(col+row+9)%3]);box(x+4,y+2,88,1,'#f0d9b5');}
+}
+rc.restore();
+}
+
 function drawRoom(t){
+updatePanelButton();
 rc.imageSmoothingEnabled=false;
 const wood='#896747',edge='#70563f',gold='#d6b47d',cream='#f4e8c9';
-const wall=state.equipped.wall?.id,wallColor=wall==='wallRose'?'#d8aa95':wall==='wallSage'?'#b8c399':'#f0e7d2';
+const wall=state.equipped.wall?.id,wallColor=wall==='wallRose'?'#d8aa95':wall==='wallSage'?'#b8c399':'#f7efdf';
 box(0,0,640,360,wallColor);drawHomeWall();
 // Plaster, exposed beams, and a consistent floor plane.
 
+if(state.roomWainscot===true){
 box(0,182,640,55,'#abb99a');for(let x=12;x<640;x+=64){frameBox(x,190,52,38,'#cad2b4','#91a283',2);box(x+3,193,46,2,'#e0e4cc')}
-box(0,181,640,5,'#d5be86');box(0,233,640,8,wood);box(0,233,640,2,gold);
-box(0,241,640,119,'#ae8961');for(let y=242;y<360;y+=20)for(let x=-((y/20|0)%2)*48;x<640;x+=96){box(x+1,y+1,94,18,['#c8a77c','#ceb18c','#c4a179'][(Math.abs(x/48|0)+(y/20|0))%3]);box(x+5,y+3,84,1,'#e4cba4');box(x+16,y+12,16,1,'#a3835e44')}
+box(0,181,640,5,'#d5be86');}
+// A narrow oak skirting leaves the full wall available for woven wallpaper.
+box(0,237,640,4,'#c6a574');box(0,237,640,1,'#ead5ad');
+drawRoomFloor();
 box(0,0,640,12,wood);box(0,12,640,3,gold);box(0,15,640,4,'#5a3b2922');for(const x of [0,628]){box(x,0,12,242,wood);box(x+3,16,3,216,'#a77448');box(x+8,16,2,216,'#4f372b')}
 // Full-height window, retaining the textile rails and unscaled pattern pixels.
 const win=furniturePalette('window');
